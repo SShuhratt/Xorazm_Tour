@@ -1,0 +1,50 @@
+FROM php:8.4-fpm
+
+WORKDIR /var/www
+
+# Install system dependencies & PHP extensions
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    unzip \
+    curl \
+    git \
+    nano \
+    libpq-dev \
+    procps \
+    && docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip \
+    && pecl install redis && docker-php-ext-enable redis \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Install Node (LTS 20)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy project files (build context must be project root)
+COPY . /var/www
+
+# Set ownership
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 0755 /var/www
+
+# Ensure PHP-FPM listens on all interfaces
+RUN if [ -f /usr/local/etc/php-fpm.d/www.conf ]; then \
+      sed -i 's|^listen = .*|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf; \
+    fi
+
+# Copy entrypoint script
+COPY docker/entrypoint.dev.sh /usr/local/bin/entrypoint.dev.sh
+RUN chmod +x /usr/local/bin/entrypoint.dev.sh
+
+EXPOSE 9000
+
+# Start container via entrypoint
+CMD ["bash", "/usr/local/bin/entrypoint.dev.sh"]

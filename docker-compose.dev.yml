@@ -1,0 +1,78 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: xorazmtour-app
+    volumes:
+      - ./:/var/www
+      - ./node_modules:/var/www/node_modules
+      - ./vendor:/var/www/vendor
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - xorazm-tour
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: xorazm_tour_db
+      DB_USERNAME: xt_user
+      DB_PASSWORD: xt1981
+
+  nginx:
+    image: nginx:alpine
+    container_name: xorazmtour-nginx
+    ports:
+      - "85:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - xorazm-tour
+
+  postgres:
+    image: postgres:15
+    container_name: xorazmtour-postgres
+    environment:
+      POSTGRES_DB: xorazm_tour_db
+      POSTGRES_USER: xt_user
+      POSTGRES_PASSWORD: xt1981
+    ports:
+      - "5436:5432"
+    volumes:
+      - xorazm-tour:/var/lib/postgresql/data
+    networks:
+      - xorazm-tour
+
+  redis:
+    image: redis:alpine
+    container_name: xorazmtour-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - xorazm-tour
+
+  node:
+    image: node:20-alpine
+    container_name: xorazmtour-node
+    user: 'root'
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./node_modules:/var/www/node_modules
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "5173:5173"
+    networks:
+      - xorazm-tour
+
+volumes:
+  xorazm-tour:
+
+networks:
+  xorazm-tour:
+    name: xorazm-tour
