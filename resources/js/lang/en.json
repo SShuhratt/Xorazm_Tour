@@ -1,0 +1,132 @@
+{
+    "nav": {
+        "home": "Home",
+        "tours": "Tours",
+        "cities": "Destinations",
+        "festivals": "Festivals",
+        "hotels": "Hotels",
+        "transports": "Transport",
+        "posts": "Stories",
+        "about": "About Us",
+        "contact": "Contact"
+    },
+    "hero": {
+        "title": "Discover Xorazm",
+        "subtitle": "Journey through the heart of the Silk Road",
+        "cta": "Explore Tours"
+    },
+    "home": {
+        "discover": "Discover Xorazm",
+        "destinations": "Destinations",
+        "destinations_sub": "The historic oases of Uzbekistan",
+        "view_all": "View All",
+        "explore_city": "Explore City",
+        "view_tour": "View Tour",
+        "festival_details": "Festival Details",
+        "curated": "Curated Experiences",
+        "see_itinerary": "See Itinerary",
+        "days": "Days",
+        "upcoming_festivals": "Upcoming Festivals",
+        "latest_stories": "Latest Stories"
+    },
+    "tours": {
+        "title": "Our Tours",
+        "subtitle": "Silk Road adventures crafted with care",
+        "view_itinerary": "View Full Itinerary",
+        "detailed_itinerary": "Detailed Itinerary",
+        "day_exploration": "Day {day} Exploration",
+        "route_path": "Route Path",
+        "transport_comfort": "Transport & Comfort",
+        "included_transport": "Included Transport"
+    },
+    "cities": {
+        "title": "Destinations",
+        "subtitle": "Ancient cities waiting to be explored",
+        "explore": "Explore Destination",
+        "historical_center": "Historical Center",
+        "adventures_in": "Adventures in {name}",
+        "location": "Location Coordinates"
+    },
+    "festivals": {
+        "title": "Festivals",
+        "subtitle": "Celebrate centuries-old traditions",
+        "cultural_heritage": "Cultural Heritage",
+        "traditions": "Xorazm Traditions"
+    },
+    "hotels": {
+        "title": "Boutique Stays",
+        "subtitle": "Authentic Uzbek comfort in the heart of ancient oases",
+        "refined": "Refined Hospitality",
+        "reservations": "Reservations",
+        "phone": "Phone Number"
+    },
+    "transports": {
+        "title": "Our Fleet",
+        "subtitle": "Comfortable travel across Uzbekistan",
+        "modern_fleet": "Modern Fleet",
+        "seats": "{count} Seats",
+        "view_specs": "View Specifications",
+        "gallery": "Gallery",
+        "capacity": "Capacity",
+        "height": "Height",
+        "width": "Width",
+        "length": "Length"
+    },
+    "posts": {
+        "title": "Travel Stories",
+        "subtitle": "Latest updates, history deep-dives, and travel tips from Xorazm",
+        "read_story": "Read Story",
+        "source": "Originally published at"
+    },
+    "about": {
+        "title": "About Xorazm Tour",
+        "subtitle": "Your gateway to the wonders of ancient Khorezm",
+        "mission_title": "Our Mission",
+        "mission_text": "We are dedicated to unveiling the rich historical heritage of the Khorezm region to travelers from around the world. Our team of local experts crafts immersive experiences that connect you with centuries-old traditions, stunning architecture, and the warm hospitality of Uzbekistan.",
+        "why_title": "Why Choose Us",
+        "why_local": "Local Expertise",
+        "why_local_text": "Born and raised in Khorezm, our guides offer authentic insights into the region's history, culture, and hidden gems that only locals know.",
+        "why_curated": "Curated Experiences",
+        "why_curated_text": "Every tour is meticulously planned to balance historical exploration, cultural immersion, and comfortable travel.",
+        "why_heritage": "Heritage Preservation",
+        "why_heritage_text": "We are committed to sustainable tourism that supports local communities and preserves the region's UNESCO World Heritage sites.",
+        "stats_tours": "Tours Completed",
+        "stats_guests": "Happy Guests",
+        "stats_years": "Years Experience",
+        "stats_cities": "Cities Covered"
+    },
+    "contact": {
+        "title": "Get in Touch",
+        "subtitle": "We'd love to hear from you. Plan your journey with us.",
+        "name": "Full Name",
+        "email": "Email Address",
+        "subject": "Subject",
+        "message": "Your Message",
+        "send": "Send Message",
+        "sending": "Sending...",
+        "success": "Your message has been sent successfully!",
+        "info_title": "Contact Information",
+        "address": "Khiva, Xorazm Region, Uzbekistan",
+        "phone": "+998 62 375 00 00",
+        "email_address": "info@xorazmtour.uz",
+        "follow": "Follow Us"
+    },
+    "footer": {
+        "description": "Your gateway to the wonders of ancient Khorezm. Discover UNESCO World Heritage sites, rich traditions, and the legendary Silk Road.",
+        "quick_links": "Quick Links",
+        "contact_us": "Contact Us",
+        "newsletter": "Newsletter",
+        "newsletter_text": "Subscribe to receive travel tips and exclusive offers.",
+        "subscribe": "Subscribe",
+        "subscribing": "Subscribing...",
+        "newsletter_success": "Thank you for subscribing!",
+        "rights": "All rights reserved.",
+        "email_placeholder": "Your email"
+    },
+    "common": {
+        "back": "Back",
+        "loading": "Loading...",
+        "not_available": "N/A",
+        "read_more": "Read More"
+    }
+}

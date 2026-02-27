@@ -1,0 +1,132 @@
+{
+    "nav": {
+        "home": "Bosh sahifa",
+        "tours": "Turlar",
+        "cities": "Shaharlar",
+        "festivals": "Festivallar",
+        "hotels": "Mehmonxonalar",
+        "transports": "Transport",
+        "posts": "Maqolalar",
+        "about": "Biz haqimizda",
+        "contact": "Aloqa"
+    },
+    "hero": {
+        "title": "Xorazmni kashf eting",
+        "subtitle": "Buyuk Ipak yo'li qalbiga sayohat",
+        "cta": "Turlarni ko'rish"
+    },
+    "home": {
+        "discover": "Xorazmni kashf eting",
+        "destinations": "Yo'nalishlar",
+        "destinations_sub": "O'zbekistonning tarixiy vohalari",
+        "view_all": "Barchasi",
+        "explore_city": "Kashf etish",
+        "view_tour": "Batafsil",
+        "festival_details": "Batafsil",
+        "curated": "Tanlangan sayohatlar",
+        "see_itinerary": "Marshrut",
+        "days": "Kun",
+        "upcoming_festivals": "Yaqinlashayotgan festivallar",
+        "latest_stories": "So'nggi maqolalar"
+    },
+    "tours": {
+        "title": "Bizning turlar",
+        "subtitle": "Mehribonlik bilan yaratilgan Ipak yo'li sayohatlari",
+        "view_itinerary": "To'liq marshrut",
+        "detailed_itinerary": "Batafsil marshrut",
+        "day_exploration": "{day}-kun sayohati",
+        "route_path": "Yo'nalish",
+        "transport_comfort": "Transport va qulaylik",
+        "included_transport": "Kiritilgan transport"
+    },
+    "cities": {
+        "title": "Shaharlar",
+        "subtitle": "Kashf etilishni kutayotgan qadimiy shaharlar",
+        "explore": "Kashf etish",
+        "historical_center": "Tarixiy markaz",
+        "adventures_in": "{name}dagi sarguzashtlar",
+        "location": "Joylashuv koordinatalari"
+    },
+    "festivals": {
+        "title": "Festivallar",
+        "subtitle": "Asriy an'analarni nishonlang",
+        "cultural_heritage": "Madaniy meros",
+        "traditions": "Xorazm an'analari"
+    },
+    "hotels": {
+        "title": "Mehmonxonalar",
+        "subtitle": "Qadimiy vohalar qalbida haqiqiy o'zbek mehmondo'stligi",
+        "refined": "Nafis mehmondo'stlik",
+        "reservations": "Bron qilish",
+        "phone": "Telefon raqami"
+    },
+    "transports": {
+        "title": "Bizning transport",
+        "subtitle": "O'zbekiston bo'ylab qulay sayohat",
+        "modern_fleet": "Zamonaviy transport parki",
+        "seats": "{count} o'rindiq",
+        "view_specs": "Xususiyatlar",
+        "gallery": "Galereya",
+        "capacity": "Sig'imi",
+        "height": "Balandligi",
+        "width": "Kengligi",
+        "length": "Uzunligi"
+    },
+    "posts": {
+        "title": "Sayohat hikoyalari",
+        "subtitle": "So'nggi yangiliklar, tarix va sayohat maslahatlari",
+        "read_story": "O'qish",
+        "source": "Manba"
+    },
+    "about": {
+        "title": "Xorazm Tour haqida",
+        "subtitle": "Qadimiy Xorazm mo'jizalariga yo'lingiz",
+        "mission_title": "Bizning vazifamiz",
+        "mission_text": "Biz Xorazm viloyatining boy tarixiy merosini dunyo bo'ylab sayohatchilar uchun ochishga bag'ishlanganmiz. Mahalliy mutaxassislar jamoamiz sizni asriy an'analar, ajoyib me'morchilik va O'zbekistonning issiq mehmondo'stligi bilan bog'laydigan chuqur tajribalar yaratadi.",
+        "why_title": "Nega bizni tanlash kerak",
+        "why_local": "Mahalliy tajriba",
+        "why_local_text": "Xorazmda tug'ilib o'sgan gidlarimiz mintaqaning tarixi, madaniyati va faqat mahalliy aholi biladigan yashirin durdonalari haqida haqiqiy tushuncha taklif qiladi.",
+        "why_curated": "Tanlangan tajribalar",
+        "why_curated_text": "Har bir tur tarixiy kashfiyot, madaniy chuqurlik va qulay sayohat muvozanatini saqlash uchun puxta rejalashtirilgan.",
+        "why_heritage": "Merosni saqlash",
+        "why_heritage_text": "Biz mahalliy jamoalarni qo'llab-quvvatlaydigan va mintaqaning YUNESKO Jahon merosi ob'ektlarini saqlaydigan barqaror turizmga sodiqmiz.",
+        "stats_tours": "O'tkazilgan turlar",
+        "stats_guests": "Mamnun mehmonlar",
+        "stats_years": "Yillik tajriba",
+        "stats_cities": "Shaharlar qamrovi"
+    },
+    "contact": {
+        "title": "Biz bilan bog'laning",
+        "subtitle": "Sizdan xabar olishdan mamnun bo'lamiz. Sayohatingizni biz bilan rejalashtiring.",
+        "name": "To'liq ism",
+        "email": "Elektron pochta",
+        "subject": "Mavzu",
+        "message": "Xabaringiz",
+        "send": "Yuborish",
+        "sending": "Yuborilmoqda...",
+        "success": "Xabaringiz muvaffaqiyatli yuborildi!",
+        "info_title": "Aloqa ma'lumotlari",
+        "address": "Xiva, Xorazm viloyati, O'zbekiston",
+        "phone": "+998 62 375 00 00",
+        "email_address": "info@xorazmtour.uz",
+        "follow": "Bizni kuzating"
+    },
+    "footer": {
+        "description": "Qadimiy Xorazm mo'jizalariga yo'lingiz. YUNESKO Jahon merosi ob'ektlarini, boy an'analarni va afsonaviy Ipak yo'lini kashf eting.",
+        "quick_links": "Tezkor havolalar",
+        "contact_us": "Aloqa",
+        "newsletter": "Yangiliklar",
+        "newsletter_text": "Sayohat maslahatlari va eksklyuziv takliflar olish uchun obuna bo'ling.",
+        "subscribe": "Obuna bo'lish",
+        "subscribing": "Obuna qilinyapti...",
+        "newsletter_success": "Obunaingiz uchun rahmat!",
+        "rights": "Barcha huquqlar himoyalangan.",
+        "email_placeholder": "Emailingiz"
+    },
+    "common": {
+        "back": "Orqaga",
+        "loading": "Yuklanmoqda...",
+        "not_available": "M/E",
+        "read_more": "Batafsil"
+    }
+}
