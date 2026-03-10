@@ -7,11 +7,12 @@ import { useTranslations } from '@/hooks/use-translations';
 export default function MainNavbar() {
     const { locale } = usePage<PageProps>().props;
     const { t } = useTranslations();
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     useEffect(() => {
-        const onScroll = () => setIsScrolled(window.scrollY > 50);
+        const onScroll = () => {
+            // Navbar is always visible with fixed styling
+        };
         window.addEventListener('scroll', onScroll);
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
@@ -37,11 +38,7 @@ export default function MainNavbar() {
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-                isScrolled
-                    ? 'bg-navy/95 backdrop-blur-md shadow-lg'
-                    : 'bg-transparent'
-            }`}
+            className="fixed top-0 left-0 right-0 z-50 bg-navy/98 backdrop-blur-md shadow-lg border-b border-gold/20 transition-all duration-300"
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">

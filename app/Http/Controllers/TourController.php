@@ -11,7 +11,7 @@ class TourController extends Controller
     {
         app()->setLocale($locale);
         $tours = Tour::with(['translations', 'mainImage'])
-            ->where('status', true)
+            ->where('status', 'active')
             ->get();
 
         return Inertia::render('tours/index', [
