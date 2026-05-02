@@ -9,7 +9,7 @@ class FestivalController extends Controller
 {
     public function index(string $locale){
         app()->setLocale($locale);
-        $festivals = Festival::with(['translations', 'mainImage'])
+        $festivals = Festival::with(['translations', 'mainImage', 'images'])
             ->where('status', true)
             ->get();
 

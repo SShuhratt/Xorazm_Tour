@@ -10,7 +10,7 @@ class TourController extends Controller
     public function index(string $locale)
     {
         app()->setLocale($locale);
-        $tours = Tour::with(['translations', 'mainImage'])
+        $tours = Tour::with(['translations', 'mainImage', 'images'])
             ->where('status', 'active')
             ->get();
 

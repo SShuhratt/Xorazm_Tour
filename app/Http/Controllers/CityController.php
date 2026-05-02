@@ -9,7 +9,7 @@ class CityController extends Controller
 {
     public function index(string $locale){
         app()->setLocale($locale);
-        $cities = City::with(['translations', 'mainImage'])
+        $cities = City::with(['translations', 'mainImage', 'images'])
             ->where('status', true)
             ->get();
 

@@ -9,7 +9,7 @@ class HotelController extends Controller
 {
     public function index(string $locale){
         app()->setLocale($locale);
-        $hotels = Hotel::with(['translations', 'mainImage'])
+        $hotels = Hotel::with(['translations', 'mainImage', 'images'])
             ->where('status', true)
             ->get();
 
