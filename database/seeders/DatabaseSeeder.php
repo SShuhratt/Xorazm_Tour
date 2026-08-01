@@ -16,13 +16,14 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::firstOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'Xorazm_Tourism'],
             [
-                'name'              => 'Test User',
-                'password'          => 'password',
+                'name'              => 'Xorazm_Tourism',
+                'password'          => \Illuminate\Support\Facades\Hash::make('xtxtxt11'),
                 'email_verified_at' => now(),
             ]
         );
+
 
         $this->call(LanguageSeeder::class);
         $this->call(CitySeeder::class);

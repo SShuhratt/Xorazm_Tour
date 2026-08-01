@@ -32,6 +32,7 @@ export default function MainNavbar() {
         { href: `/${locale}/cities`, label: t('nav.cities') },
         { href: `/${locale}/festivals`, label: t('nav.festivals') },
         { href: `/${locale}/hotels`, label: t('nav.hotels') },
+        { href: `/${locale}/dishes`, label: t('nav.dishes') },
         { href: `/${locale}/about`, label: t('nav.about') },
         { href: `/${locale}/contact`, label: t('nav.contact') },
     ];
@@ -42,24 +43,31 @@ export default function MainNavbar() {
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="flex h-20 items-center justify-between">
-                    {/* Logo */}
                     <Link
                         href={`/${locale}`}
-                        className="flex items-center gap-1 font-serif text-2xl tracking-wide"
+                        className="flex items-center gap-3 font-serif text-xl sm:text-2xl lg:text-3xl tracking-wide shrink-0"
                     >
-                        <span className="text-white">XORAZM</span>
-                        <span className="text-gold">TOUR</span>
+                        <img 
+                            src="/XT_content/xorazmtour_logo.png" 
+                            alt="Xorazm Tour Logo" 
+                            className="h-20 w-auto object-contain py-1"
+                        />
+                        <div className="flex items-center gap-1">
+                            <span className="text-white">XORAZM</span>
+                            <span className="text-gold">TOUR</span>
+                        </div>
                     </Link>
 
                     {/* Desktop Nav */}
-                    <div className="hidden items-center gap-8 lg:flex">
+                    <div className="hidden items-center gap-3 xl:gap-6 lg:flex mx-4">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-[15px] font-bold uppercase tracking-[0.15em] text-white/90 transition-all duration-300 hover:text-gold hover:tracking-[0.2em]"
+                                className="relative text-xs xl:text-sm font-bold uppercase tracking-[0.1em] xl:tracking-[0.15em] text-white/90 transition-colors duration-300 hover:text-gold py-2 group whitespace-nowrap"
                             >
                                 {link.label}
+                                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gold transition-all duration-300 group-hover:w-full" />
                             </Link>
                         ))}
                     </div>

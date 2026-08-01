@@ -12,7 +12,7 @@ export default function CardCarousel({ images, alt }: Props) {
 
     if (!images || images.length === 0) {
         return (
-            <div className="w-full h-full bg-navy/5 flex items-center justify-center">
+            <div className="w-full h-48 bg-navy/5 flex items-center justify-center">
                 <span className="text-navy/20 text-xs font-serif italic">No image available</span>
             </div>
         );
@@ -29,7 +29,7 @@ export default function CardCarousel({ images, alt }: Props) {
     };
 
     return (
-        <div className="relative w-full h-full group/carousel overflow-hidden">
+        <div className="relative w-full h-48 group/carousel overflow-hidden">
             <AnimatePresence mode="wait">
                 <motion.img
                     key={currentIndex}
@@ -39,7 +39,7 @@ export default function CardCarousel({ images, alt }: Props) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.6 }}
-                    className="w-full h-full object-cover"
+                    className="w-full h-48 object-cover"
                 />
             </AnimatePresence>
 

@@ -17,20 +17,20 @@ class FestivalSeeder extends Seeder
         $festivals = [
             'khiva' => [
                 [
-                    'slug'   => 'khiva-ancient-culture-festival',
+                    'slug'   => 'qovun-sayli',
                     'coords' => [41.3770, 60.3600],
                     'translations' => [
                         'en' => [
-                            'Khiva Ancient Culture Festival',
-                            'Festival celebrating Khiva’s ancient traditions, crafts, and folklore.'
+                            'Qovun Sayli (Melon Festival)',
+                            'Qovun Sayli (Melon Festival) is a spectacular annual celebration held in the ancient fortress of Ichan-Kala, Khiva. This vibrant festival showcases the legendary sweetness and rich variety of Khorezmian melons, which have been famous since the Silk Road era. Visitors can enjoy live folk music, traditional dances (including the energetic Lazgi), masterclasses by local craftsmen, and tastings of over 30 different kinds of delicious melons grown in the oasis. It is a true feast of colors, taste, and hospitality.'
                         ],
                         'ru' => [
-                            'Фестиваль древней культуры Хивы',
-                            'Фестиваль, посвящённый древним традициям, ремёслам и фольклору Хивы.'
+                            'Ковун Сайли (Праздник дыни)',
+                            'Ковун Сайли (Праздник дыни) — это зрелищное ежегодное празднование, проходящее в древней крепости Ичан-Кала в Хиве. Этот яркий фестиваль демонстрирует легендарную сладость и богатое разнообразие хорезмских дынь, славящихся еще со времен Великого шелкового пути. Посетители могут насладиться живой народной музыкой, традиционными танцами (включая зажигательный Лазги), мастер-классами местных ремесленников и дегустацией более 30 различных видов вкуснейших дынь, выращенных в оазисе. Это настоящий праздник красок, вкуса и гостеприимства.'
                         ],
                         'uz' => [
-                            'Xiva qadimiy madaniyat festivali',
-                            'Xivaning qadimiy anʼanalari, hunarmandchiligi va folkloriga bagʻishlangan festival.'
+                            'Qovun sayli (Melon Festival)',
+                            'Qovun sayli — Xivaning qadimiy Ichan-Qal\'a me\'moriy majmuasida har yili o\'tkaziladigan ajoyib hosil bayramidir. Ushbu yorqin festival buyuk Ipak yo\'li davridan beri mashhur bo\'lgan Xorazm qovunlarining betakror shirinligi va xilma-xilligini namoyish etadi. Ziyoratchilar jonli xalq musiqasi, an\'anaviy raqs tomoshalari (jumladan, olovli Lazgi), hunarmandlar mahorat darslari va vohada yetishtirilgan 30 dan ortiq eng sara qovun turlaridan tatib ko\'rishlari mumkin. Bu chinakam ranglar, lazzat va mehmondo\'stlik bayramidir.'
                         ],
                     ],
                 ],

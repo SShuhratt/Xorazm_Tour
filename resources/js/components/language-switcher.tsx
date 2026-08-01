@@ -32,7 +32,7 @@ export default function LanguageSwitcher() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden"
+                        className="absolute right-0 mt-2 w-40 bg-navy/95 backdrop-blur-md rounded-xl shadow-2xl border border-gold/20 overflow-hidden"
                     >
                         {languages.map((lang) => (
                             <Link
@@ -40,8 +40,8 @@ export default function LanguageSwitcher() {
                                 href={`/language/${lang.code}`}
                                 method="get"
                                 onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-50 transition-colors ${
-                                    locale === lang.code ? 'text-[#3498db] font-bold' : 'text-gray-600'
+                                className={`flex items-center gap-3 px-4 py-3 text-sm hover:bg-gold/10 transition-colors ${
+                                    locale === lang.code ? 'text-gold font-bold' : 'text-white/80'
                                 }`}
                             >
                                 <span>{lang.flag}</span>

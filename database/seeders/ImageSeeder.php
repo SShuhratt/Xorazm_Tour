@@ -106,41 +106,90 @@ class ImageSeeder extends Seeder
         $curatedImages = [
             'tour' => [
                 'classic-uzbekistan' => [
-                    'https://images.unsplash.com/photo-1528154291023-a6525fabe5b4?auto=format&fit=crop&w=1000&q=80', // Khiva
-                    'https://images.unsplash.com/photo-1628172901389-98336338b813?auto=format&fit=crop&w=1000&q=80', // Bukhara
-                    'https://images.unsplash.com/photo-1540960300165-025732b130f1?auto=format&fit=crop&w=1000&q=80', // Samarkand
+                    'XT_content/samarkand/photos/samarkand2.jpg',
+                    'XT_content/bukhara/photos/bukhara1.jpg',
+                    'XT_content/khiva/Photos/khiva1.jpg',
                 ],
                 'khiva-bukhara-tashkent' => [
-                    'https://images.unsplash.com/photo-1578922746465-3a80a228f223?auto=format&fit=crop&w=1000&q=80', // Khiva 2
-                    'https://images.unsplash.com/photo-1588168333991-ad1893361847?auto=format&fit=crop&w=1000&q=80', // Bukhara 2
-                    'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=1000&q=80', // Tashkent
+                    'XT_content/khiva/Photos/khiva2.jpg',
+                    'XT_content/bukhara/photos/bukhara2.jpg',
+                    'XT_content/other/photo_2025-12-31_23-14-32.jpg',
                 ],
                 'silk-road-adventure' => [
-                    'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80', // Caravan
-                    'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=80', // Desert
-                    'https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=1000&q=80', // Wall
+                    'XT_content/other/photo_2025-07-26_13-34-11.jpg',
+                    'XT_content/other/photo_2025-12-31_23-16-28.jpg',
+                    'XT_content/other/photo_2025-12-31_23-18-05.jpg',
                 ],
             ],
             'hotel' => [
                 'orient-star-khiva' => [
-                    'https://images.unsplash.com/photo-1584442111166-5198ec56e297?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1610484826967-09c5720778c7?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1000&q=80',
+                    'XT_content/khiva/Photos/khiva_main.jpg',
+                    'XT_content/khiva/Photos/khiva5.jpg',
                 ],
                 'asia-khiva' => [
-                    'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=80',
+                    'XT_content/khiva/Photos/khiva3.jpg',
+                    'XT_content/khiva/Photos/khiva4.jpg',
                 ],
                 'hyatt-regency' => [
-                    'https://images.unsplash.com/photo-1551882547-ff43c61f3630?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1000&q=80',
+                    'XT_content/other/photo_2023-03-17_13-56-03.jpg',
+                    'XT_content/other/photo_2025-12-31_23-14-44.jpg',
                 ],
                 'registan-plaza' => [
-                    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1000&q=80',
-                    'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1000&q=80',
+                    'XT_content/samarkand/photos/samarkand6.jpg',
+                    'XT_content/other/photo_2025-12-31_23-15-30.jpg',
+                ],
+            ],
+            'festival' => [
+                'qovun-sayli' => [
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-16-28.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2023-03-17_13-56-03.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-18-45.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-18-05.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-18-46.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-21-23.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2023-03-17_13-56-04.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-16-22.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-21-17.jpg',
+                    'XT_content/festivals/Qovun-sayli/photo_2025-12-31_23-17-33.jpg',
+                ],
+                'lazgi-dance-festival' => [
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-14-32.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-14-57.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-28-12.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-14-44.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-15-19.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-16-45 (2).jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-14-31 (2).jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-15-30.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-14-31.jpg',
+                    'XT_content/festivals/Lazgi-festival/photo_2025-12-31_23-16-27.jpg',
+                ],
+                'sharq-taronalari' => [
+                    'XT_content/samarkand/photos/samarkand2.jpg',
+                    'XT_content/samarkand/photos/samarkand6.jpg',
+                ],
+                'samarkand-artisan-festival' => [
+                    'XT_content/samarkand/photos/samarkand6.jpg',
+                    'XT_content/samarkand/photos/samarkand2.jpg',
+                ],
+                'silk-and-spices-festival' => [
+                    'XT_content/bukhara/photos/bukhara1.jpg',
+                    'XT_content/bukhara/photos/bukhara6.jpg',
+                    'XT_content/bukhara/photos/bukhara5.jpg',
+                ],
+                'bukhara-folk-festival' => [
+                    'XT_content/bukhara/photos/bukhara2.jpg',
+                    'XT_content/bukhara/photos/bukhara4.jpg',
+                ],
+                'tashkent-international-film-festival' => [
+                    'XT_content/toshkent/photos/photo_2025-12-31_23-17-37.jpg',
+                ],
+                'tashkent-food-festival' => [
+                    'XT_content/national-dishes/photo_2025-12-31_23-16-31.jpg',
+                    'XT_content/national-dishes/photo_2025-12-31_23-16-31 (2).jpg',
+                    'XT_content/national-dishes/photo_2025-12-31_23-16-38.jpg',
+                    'XT_content/national-dishes/photo_2025-12-31_23-16-36.jpg',
+                    'XT_content/national-dishes/photo_2025-12-31_23-16-34.jpg',
                 ],
             ],
         ];

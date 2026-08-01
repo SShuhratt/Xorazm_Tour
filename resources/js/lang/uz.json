@@ -8,7 +8,8 @@
         "transports": "Transport",
         "posts": "Maqolalar",
         "about": "Biz haqimizda",
-        "contact": "Aloqa"
+        "contact": "Aloqa",
+        "dishes": "Milliy taomlar"
     },
     "hero": {
         "title": "Xorazmni kashf eting",
@@ -37,7 +38,11 @@
         "day_exploration": "{day}-kun sayohati",
         "route_path": "Yo'nalish",
         "transport_comfort": "Transport va qulaylik",
-        "included_transport": "Kiritilgan transport"
+        "included_transport": "Kiritilgan transport",
+        "filter_all": "Barchasi",
+        "filter_cultural": "Madaniy",
+        "filter_adventure": "Sarguzasht",
+        "filter_premium": "Premium"
     },
     "cities": {
         "title": "Shaharlar",
@@ -128,5 +133,50 @@
         "loading": "Yuklanmoqda...",
         "not_available": "M/E",
         "read_more": "Batafsil"
+    },
+    "carousel": {
+        "city": "Yo'nalish",
+        "festival": "Festival",
+        "hotel": "Mehmonxona",
+        "tour": "Tur",
+        "explore_city": "Kashf etish",
+        "view_festival": "Batafsil",
+        "view_hotel": "Batafsil",
+        "book_tour": "Band qilish",
+        "next": "Keyingi",
+        "welcome_title": "Xorazm Tourga xush kelibsiz",
+        "welcome_subtitle": "Xiva va Xorazm viloyatining qadimiy go'zalligi va an'analarini kashf eting.",
+        "city_desc": "Ushbu qadimiy makonning go'zalligini kashf eting",
+        "festival_desc": "Jonli madaniyat va an'analarni his eting",
+        "hotel_desc": "Sizning qulayligingiz uchun hashamatli joylar",
+        "tour_desc": "{duration} kunlik unutilmas sayohat"
+    },
+    "dishes": {
+        "title": "O'zbekiston Milliy Taomlari",
+        "subtitle": "Barcha 12 viloyat va Qoraqalpog'iston gastronomik atlasi",
+        "heritage": "Gastronomik Meros",
+        "view_details": "Batafsil",
+        "origin": "Kelib chiqish hududi",
+        "category": "Taom toifasi",
+        "add_to_tour": "Gastro Turga Qo'shish",
+        "added_success": "Ushbu hududiy taom ziyorati gastro-marshrutga qo'shildi! 🧭",
+        "ingredients": "Asosiy An'anaviy Masalliqlar",
+        "history_title": "Tarixi va Tayyorlanish Mukammalligi",
+        "regions": {
+            "all": "Barchasi",
+            "xorazm": "Xorazm",
+            "qoraqalpogiston": "Qoraqalpog'iston",
+            "tashkent": "Toshkent",
+            "samarkand": "Samarqand",
+            "bukhara": "Buxoro",
+            "fergana": "Farg'ona",
+            "andijan": "Andijon",
+            "namangan": "Namangan",
+            "kashkadarya": "Qashqadaryo",
+            "surkhandarya": "Surxondaryo",
+            "jizzakh": "Jizzax",
+            "syrdarya": "Sirdaryo",
+            "navoi": "Navoiy"
+        }
     }
 }

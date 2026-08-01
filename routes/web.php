@@ -8,6 +8,7 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\TransportController;
+use App\Http\Controllers\DishController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -44,8 +45,42 @@ Route::group([
     Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
     Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
 
+    Route::get('/dishes', [DishController::class, 'index'])->name('dishes.index');
+    Route::get('/dishes/{slug}', [DishController::class, 'show'])->name('dishes.show');
+
     // New static pages
     Route::inertia('/about', 'about')->name('about');
     Route::inertia('/contact', 'contact')->name('contact');
 
 });
+
+use App\Http\Controllers\Admin\DashboardAdminController;
+use App\Http\Controllers\Admin\CityAdminController;
+use App\Http\Controllers\Admin\TourAdminController;
+use App\Http\Controllers\Admin\HotelAdminController;
+use App\Http\Controllers\Admin\FestivalAdminController;
+use App\Http\Controllers\Admin\TransportAdminController;
+use App\Http\Controllers\Admin\PostAdminController;
+use App\Http\Controllers\Admin\ImageAdminController;
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
+
+    Route::resource('cities', CityAdminController::class)->except(['show']);
+    Route::resource('tours', TourAdminController::class)->except(['show']);
+    Route::resource('hotels', HotelAdminController::class)->except(['show']);
+    Route::resource('festivals', FestivalAdminController::class)->except(['show']);
+    Route::resource('transports', TransportAdminController::class)->except(['show']);
+    Route::resource('posts', PostAdminController::class)->except(['show']);
+
+    Route::post('images/upload', [ImageAdminController::class, 'upload'])->name('images.upload');
+    Route::delete('images/{image}', [ImageAdminController::class, 'destroy'])->name('images.destroy');
+    Route::post('images/{image}/set-main', [ImageAdminController::class, 'setMain'])->name('images.set-main');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return redirect()->route('admin.dashboard');
+    })->name('dashboard');
+});
+

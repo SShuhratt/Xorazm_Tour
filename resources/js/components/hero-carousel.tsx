@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tour, City, Festival, Hotel } from '@/types';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
 
 interface CarouselItem {
     type: 'city' | 'festival' | 'hotel' | 'tour';
@@ -30,60 +31,61 @@ export default function HeroCarousel({
     featuredTours,
     locale,
 }: Props) {
+    const { t } = useTranslations();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [autoplay, setAutoplay] = useState(true);
 
     // Build carousel items from all data
     const carouselItems: CarouselItem[] = [
         ...cities.map((city) => {
-            const trans = city.translations.find((t) => t.locale === locale) || city.translations[0];
+            const trans = city.translations.find((transItem) => transItem.locale === locale) || city.translations[0];
             return {
                 type: 'city' as const,
                 id: city.id,
                 slug: city.slug,
                 image: city.main_image?.path || '',
                 title: trans.name,
-                description: trans.description || 'Discover the beauty of this ancient destination',
-                cta: 'Explore City',
+                description: trans.description || t('carousel.city_desc'),
+                cta: t('carousel.explore_city'),
                 href: `/${locale}/cities/${city.slug}`,
             };
         }),
         ...festivals.slice(0, 3).map((festival) => {
-            const trans = festival.translations.find((t) => t.locale === locale) || festival.translations[0];
+            const trans = festival.translations.find((transItem) => transItem.locale === locale) || festival.translations[0];
             return {
                 type: 'festival' as const,
                 id: festival.id,
                 slug: festival.slug,
                 image: festival.main_image?.path || '',
                 title: trans.title,
-                description: trans.description || 'Experience the vibrant culture and traditions',
-                cta: 'View Festival',
+                description: trans.description || t('carousel.festival_desc'),
+                cta: t('carousel.view_festival'),
                 href: `/${locale}/festivals/${festival.slug}`,
             };
         }),
         ...hotels.slice(0, 2).map((hotel) => {
-            const trans = hotel.translations.find((t) => t.locale === locale) || hotel.translations[0];
+            const trans = hotel.translations.find((transItem) => transItem.locale === locale) || hotel.translations[0];
             return {
                 type: 'hotel' as const,
                 id: hotel.id,
                 slug: hotel.slug,
                 image: hotel.main_image?.path || '',
                 title: trans.title,
-                description: trans.description || 'Luxury accommodations for your comfort',
-                cta: 'View Hotel',
+                description: trans.description || t('carousel.hotel_desc'),
+                cta: t('carousel.view_hotel'),
                 href: `/${locale}/hotels/${hotel.slug}`,
             };
         }),
         ...featuredTours.slice(0, 2).map((tour) => {
-            const trans = tour.translations.find((t) => t.locale === locale) || tour.translations[0];
+            const trans = tour.translations.find((transItem) => transItem.locale === locale) || tour.translations[0];
             return {
                 type: 'tour' as const,
                 id: tour.id,
                 slug: tour.slug,
                 image: tour.main_image?.path || '',
                 title: trans.title,
-                description: trans.description || `Unforgettable journey for ${trans.duration} days`,
-                cta: 'Book Tour',
+                description: trans.description || t('carousel.tour_desc', { duration: trans.duration }),
+                cta: t('carousel.book_tour'),
                 href: `/${locale}/tours/${tour.slug}`,
             };
         }),
@@ -109,6 +111,24 @@ export default function HeroCarousel({
 
     const nextSlide = () => goToSlide(currentIndex + 1);
     const prevSlide = () => goToSlide(currentIndex - 1 + carouselItems.length);
+
+    if (carouselItems.length === 0) {
+        return (
+            <section className="relative min-h-[600px] md:h-screen w-full flex items-center justify-center overflow-hidden pt-20 bg-navy text-ivory">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-r from-navy/80 via-navy/50 to-navy/40" />
+                </div>
+                <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+                    <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-ivory font-bold mb-6">
+                        {t('carousel.welcome_title')}
+                    </h1>
+                    <p className="text-ivory/90 text-base sm:text-lg md:text-xl font-light tracking-widest mb-8 max-w-2xl mx-auto">
+                        {t('carousel.welcome_subtitle')}
+                    </p>
+                </div>
+            </section>
+        );
+    }
 
     const currentItem = carouselItems[currentIndex];
 
@@ -141,7 +161,7 @@ export default function HeroCarousel({
                     <div className="absolute inset-0 bg-gradient-to-r from-navy/80 via-navy/50 to-navy/40" />
                 </motion.div>
             </AnimatePresence>
-
+ 
             {/* Content */}
             <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
                 <motion.div
@@ -155,10 +175,10 @@ export default function HeroCarousel({
                     <span
                         className={`inline-block ${badge.bg} ${badge.text} px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest`}
                     >
-                        {currentItem.type}
+                        {t(`carousel.${currentItem.type}`)}
                     </span>
                 </motion.div>
-
+ 
                 <motion.h1
                     key={`title-${currentIndex}`}
                     initial={{ opacity: 0, y: 20 }}
@@ -169,7 +189,7 @@ export default function HeroCarousel({
                 >
                     {currentItem.title}
                 </motion.h1>
-
+ 
                 <motion.p
                     key={`desc-${currentIndex}`}
                     initial={{ opacity: 0, y: 20 }}
@@ -180,7 +200,7 @@ export default function HeroCarousel({
                 >
                     {currentItem.description}
                 </motion.p>
-
+ 
                 <motion.div
                     key={`cta-${currentIndex}`}
                     initial={{ opacity: 0, y: 20 }}
@@ -199,11 +219,11 @@ export default function HeroCarousel({
                         onClick={() => setCurrentIndex((prev) => (prev + 1) % carouselItems.length)}
                         className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-gold text-gold font-bold rounded-lg hover:bg-gold/10 transition-all duration-300"
                     >
-                        Next <ArrowRight className="h-5 w-5" />
+                        {t('carousel.next')} <ArrowRight className="h-5 w-5" />
                     </button>
                 </motion.div>
             </div>
-
+ 
             {/* Navigation Buttons */}
             <button
                 onClick={prevSlide}
@@ -212,7 +232,7 @@ export default function HeroCarousel({
             >
                 <ChevronLeft className="h-6 w-6 text-white group-hover:text-gold transition-colors" />
             </button>
-
+ 
             <button
                 onClick={nextSlide}
                 className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 h-12 w-12 flex items-center justify-center bg-white/20 hover:bg-white/40 rounded-full transition-all duration-300 group"
@@ -220,7 +240,7 @@ export default function HeroCarousel({
             >
                 <ChevronRight className="h-6 w-6 text-white group-hover:text-gold transition-colors" />
             </button>
-
+ 
             {/* Dot Indicators */}
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
                 {carouselItems.map((_, idx) => (

@@ -1,20 +1,21 @@
 @import 'tailwindcss';
 
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@400;500;600;700&display=swap');
 
-@source '../views';
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source "../views/**/*.blade.php";
+@source "../js/**/*.tsx";
+@source "../js/**/*.ts";
+@source "../js/routes/**/*.tsx";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
     --font-sans:
-        'Inter', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+        'Outfit', ui-sans-serif, system-ui, sans-serif;
     --font-serif:
-        'Playfair Display', ui-serif, Georgia, Cambria,
-        'Times New Roman', Times, serif;
+        'Cormorant Garamond', ui-serif, Georgia, Cambria, serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -64,48 +65,54 @@
     --color-sidebar-ring: var(--sidebar-ring);
 
     /* Xorazm Tour luxury palette */
-    --color-gold: #D4AF37;
-    --color-gold-light: #F5E6C8;
-    --color-gold-muted: #B8973A;
-    --color-navy: #0B1F3A;
-    --color-navy-light: #132D54;
-    --color-ivory: #FEFCF6;
+    --color-gold: #b8860b;
+    --color-gold-light: #d4a94c;
+    --color-gold-muted: #d4a574;
+    --color-navy: #0d1b2a;
+    --color-navy-light: #1b2d45;
+    --color-ivory: #faf3eb;
+    --color-turquoise: #0a7e8c;
+    --color-turquoise-light: #12a4b5;
+    --color-terracotta: #c45a3c;
+    --color-sand: #d4a574;
+    --color-cream: #faf3eb;
+    --color-cream-dark: #f0e6d6;
 }
 
 :root {
-    --background: #FEFCF6;
-    --foreground: #2D3748;
-    --card: #FFFFFF;
-    --card-foreground: #2D3748;
-    --popover: #FFFFFF;
-    --popover-foreground: #2D3748;
-    --primary: #0B1F3A;
-    --primary-foreground: #FEFCF6;
-    --secondary: #F5E6C8;
-    --secondary-foreground: #0B1F3A;
-    --muted: #F0EDE6;
-    --muted-foreground: #6B7280;
-    --accent: #D4AF37;
-    --accent-foreground: #0B1F3A;
+    --background: #faf3eb;
+    --foreground: #1a1a1a;
+    --card: #ffffff;
+    --card-foreground: #1a1a1a;
+    --popover: #ffffff;
+    --popover-foreground: #1a1a1a;
+    --primary: #0d1b2a;
+    --primary-foreground: #faf3eb;
+    --secondary: #d4a94c;
+    --secondary-foreground: #0d1b2a;
+    --muted: #f0e6d6;
+    --muted-foreground: #5a5a5a;
+    --accent: #b8860b;
+    --accent-foreground: #0d1b2a;
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: #E5DCC3;
-    --input: #E5DCC3;
-    --ring: #D4AF37;
-    --chart-1: #D4AF37;
-    --chart-2: #0B1F3A;
-    --chart-3: #B8973A;
-    --chart-4: #132D54;
-    --chart-5: #F5E6C8;
-    --radius: 0.625rem;
-    --sidebar: #FEFCF6;
-    --sidebar-foreground: #2D3748;
-    --sidebar-primary: #0B1F3A;
-    --sidebar-primary-foreground: #FEFCF6;
-    --sidebar-accent: #F5E6C8;
-    --sidebar-accent-foreground: #0B1F3A;
-    --sidebar-border: #E5DCC3;
-    --sidebar-ring: #D4AF37;
+    --border: #f0e6d6;
+    --input: #f0e6d6;
+    --ring: #b8860b;
+    --chart-1: #b8860b;
+    --chart-2: #0d1b2a;
+    --chart-3: #d4a574;
+    --chart-4: #1b2d45;
+    --chart-5: #d4a94c;
+    --radius: 0.5rem;
+    --sidebar: #faf3eb;
+    --sidebar-foreground: #1a1a1a;
+    --sidebar-primary: #0d1b2a;
+    --sidebar-primary-foreground: #faf3eb;
+    --sidebar-accent: #d4a94c;
+    --sidebar-accent-foreground: #0d1b2a;
+    --sidebar-border: #f0e6d6;
+    --sidebar-ring: #b8860b;
 }
 
 .dark {
@@ -143,6 +150,20 @@
     --sidebar-ring: #D4AF37;
 }
 
+html {
+    font-size: 19px !important;
+}
+@media (min-width: 768px) {
+    html {
+        font-size: 21px !important;
+    }
+}
+@media (min-width: 1024px) {
+    html {
+        font-size: 23px !important;
+    }
+}
+
 @layer base {
     * {
         @apply border-border;
@@ -150,5 +171,739 @@
 
     body {
         @apply bg-background text-foreground;
+        font-size: 1.1rem;
+        line-height: 1.6;
     }
+}
+
+/* Custom layouts for standardizing images and banners */
+.tour-card-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: rgba(11, 31, 58, 0.1);
+}
+
+.tour-card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.group:hover .tour-card-image-wrapper img {
+    transform: scale(1.1);
+}
+
+.story-card-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 0.625rem; /* matches --radius */
+    background-color: rgba(11, 31, 58, 0.1);
+    margin-bottom: 1rem;
+}
+
+.story-card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.group:hover .story-card-image-wrapper img {
+    transform: scale(1.1);
+}
+
+.tour-hero-banner {
+    height: 30vh;
+}
+
+@media (min-width: 768px) {
+    .tour-hero-banner {
+        height: 35vh;
+    }
+}
+
+/* Premium Tours Grid & Card styling */
+.tours-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+@media (min-width: 768px) {
+    .tours-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 1024px) {
+    .tours-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.tour-premium-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(11, 31, 58, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.15); /* border-gold/15 */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.tour-premium-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(11, 31, 58, 0.12);
+    border-color: #D4AF37; /* border-gold */
+}
+
+.tour-card-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: rgba(11, 31, 58, 0.1);
+}
+
+.tour-price-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+    background: rgba(11, 31, 58, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    color: #D4AF37;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.tour-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #4B5563;
+    margin-bottom: 0.85rem;
+}
+
+.tour-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #0B1F3A;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    transition: color 0.3s ease;
+}
+.tour-premium-card:hover .tour-card-title {
+    color: #D4AF37;
+}
+
+.tour-explore-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.85rem;
+    background: #0B1F3A;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: auto;
+    border: 1px solid transparent;
+}
+.tour-explore-btn:hover {
+    background: #D4AF37;
+    color: #0B1F3A;
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Premium Contact Layout classes */
+.contact-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(11, 31, 58, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    display: grid;
+    grid-template-columns: 1fr;
+}
+@media (min-width: 1024px) {
+    .contact-card {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+.contact-info-panel {
+    background: linear-gradient(135deg, #0B1F3A 0%, #132D54 100%);
+    color: #ffffff;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+@media (min-width: 1024px) {
+    .contact-info-panel {
+        grid-column: span 2;
+    }
+}
+
+.contact-form-panel {
+    background: #ffffff;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+@media (min-width: 1024px) {
+    .contact-form-panel {
+        grid-column: span 3;
+    }
+}
+
+.contact-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+@media (min-width: 640px) {
+    .contact-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.contact-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #E5DCC3;
+    border-radius: 0.5rem;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    color: #2D3748;
+}
+.contact-input:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Premium Itinerary Timeline classes */
+.timeline-section {
+    position: relative;
+    margin-bottom: 5rem;
+}
+
+.timeline-day-circle {
+    position: absolute;
+    left: -56px;
+    top: -2px;
+    width: 3rem;
+    height: 3rem;
+    background-color: var(--color-gold);
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    border: 4px solid var(--color-ivory);
+    box-shadow: 0 4px 12px rgba(11, 31, 58, 0.15);
+    font-weight: 700;
+    z-index: 10;
+}
+@media (min-width: 768px) {
+    .timeline-day-circle {
+        left: -88px;
+    }
+}
+
+.timeline-day-header {
+    font-family: var(--font-serif);
+    font-size: 2.25rem; /* text-3xl standard */
+    color: var(--color-navy);
+    margin-bottom: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.timeline-container {
+    position: relative;
+    border-left: 2px solid var(--color-turquoise);
+    margin-left: 1rem;
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+}
+@media (min-width: 768px) {
+    .timeline-container {
+        margin-left: 2.5rem;
+        padding-left: 4rem;
+    }
+}
+
+/* Custom Itinerary Layout Wrapper */
+.itinerary-layout-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    margin-top: 2rem;
+    width: 100%;
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .itinerary-layout-wrapper {
+        grid-template-columns: 1fr 1fr; /* 50/50 split */
+    }
+}
+
+.itinerary-scroll-container {
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .itinerary-scroll-container {
+        max-height: 700px;
+        overflow-y: auto;
+        padding-right: 1.5rem;
+    }
+    
+    /* Elegant scrollbar style */
+    .itinerary-scroll-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    .itinerary-scroll-container::-webkit-scrollbar-track {
+        background: rgba(11, 31, 58, 0.03);
+        border-radius: 99px;
+    }
+    .itinerary-scroll-container::-webkit-scrollbar-thumb {
+        background: rgba(212, 175, 55, 0.3);
+        border-radius: 99px;
+    }
+    .itinerary-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(212, 175, 55, 0.5);
+    }
+}
+
+.itinerary-image-container {
+    width: 100%;
+}
+
+.itinerary-sticky-image-frame {
+    width: 100%;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.2); /* border-gold/20 */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    background-color: rgba(11, 31, 58, 0.05);
+    aspect-ratio: 4 / 3; /* Constant aspect ratio */
+}
+
+@media (min-width: 1024px) {
+    .itinerary-sticky-image-frame {
+        position: sticky;
+        top: 6rem;
+    }
+}
+
+/* Islamic Border Accent */
+.islamic-border {
+    height: 6px;
+    background: repeating-linear-gradient(
+        90deg,
+        #0a7e8c 0px, #0a7e8c 12px,
+        #b8860b 12px, #b8860b 16px,
+        #c45a3c 16px, #c45a3c 28px,
+        #b8860b 28px, #b8860b 32px
+    );
+    width: 100%;
+}
+
+/* Premium Silk Road Summary Dashboard */
+.summary-dashboard {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    border: 2px solid #b8860b;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.summary-dashboard-item {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0e6d6;
+}
+
+.summary-dashboard-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    background-color: #0a7e8c;
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.summary-dashboard-btn:hover {
+    background-color: #12a4b5;
+}
+
+@media (min-width: 768px) {
+    .summary-dashboard {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .summary-dashboard-item {
+        padding-bottom: 0;
+        border-bottom: none;
+        border-right: 1px solid #f0e6d6;
+        padding-right: 1rem;
+    }
+    .summary-dashboard-item:last-child {
+        border-right: none;
+        padding-right: 0;
+    }
+}
+
+/* Explicit Brand Utilities for Tailwind override resilience */
+.bg-turquoise {
+    background-color: #0a7e8c !important;
+}
+.border-turquoise {
+    border-color: #0a7e8c !important;
+}
+.text-turquoise {
+    color: #0a7e8c !important;
+}
+.bg-turquoise-light {
+    background-color: #12a4b5 !important;
+}
+.text-gold {
+    color: #b8860b !important;
+}
+.border-gold {
+    border-color: #b8860b !important;
+}
+.bg-gold {
+    background-color: #b8860b !important;
+}
+.text-gold-muted {
+    color: #d4a574 !important;
+}
+.text-navy {
+    color: #0d1b2a !important;
+}
+.bg-navy {
+    background-color: #0d1b2a !important;
+}
+
+/* Hotel Page UI Engine */
+.page-hero {
+    position: relative;
+    min-height: 45vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    background: #0d1b2a;
+}
+.page-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+.page-hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.4;
+}
+.page-hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, #0d1b2a 0%, rgba(13,27,42,0.4) 100%);
+    z-index: 1;
+}
+.page-hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 4rem 0 3rem;
+    width: 100%;
+}
+.page-hero-content .section-label {
+    color: #d4a94c;
+}
+.page-hero-content h1 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+.page-hero-content p {
+    color: rgba(255,255,255,0.75);
+    font-size: 1.1rem;
+    max-width: 650px;
+}
+
+/* Hotel Grid & Cards */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2.5rem;
+}
+@media (min-width: 768px) {
+    .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 1024px) {
+    .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+}
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.card-img {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+}
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hotel-stars {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 2px;
+    color: #d4a94c;
+    font-size: 0.9rem;
+    background: rgba(13, 27, 42, 0.6);
+    backdrop-filter: blur(4px);
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(212, 169, 76, 0.2);
+}
+.card-body {
+    padding: 1.75rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.card-body h4 {
+    margin-bottom: 0.4rem;
+    color: #0d1b2a;
+    font-size: 1.4rem;
+}
+.hotel-location {
+    font-size: 0.85rem;
+    color: #8a8a8a;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #f0e6d6;
+    margin-top: auto;
+}
+.card-price {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #0a7e8c;
+}
+.card-price small {
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 0.75rem;
+    color: #8a8a8a;
+}
+
+/* Hotel Details Show Page Gallery Grid */
+.show-gallery-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 0.5rem;
+    background: #0d1b2a;
+    padding: 0.5rem;
+    height: 350px;
+    overflow: hidden;
+}
+.main-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 0;
+}
+.sub-gallery-stack {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 0.5rem;
+    height: 100%;
+    min-height: 0;
+}
+.sub-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 0;
+}
+
+.show-body {
+    padding: 2rem 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+}
+@media (min-width: 768px) {
+    .show-body {
+        padding: 3rem 2rem;
+        grid-template-columns: 2fr 1fr;
+    }
+}
+.info-title {
+    color: #0d1b2a;
+    margin-bottom: 1.2rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #f0e6d6;
+    padding-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+.info-text {
+    font-size: 0.98rem;
+    color: #1a1a1a;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+/* Room Types & Pricing Table Component */
+.room-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    margin-bottom: 2.5rem;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.room-table th, .room-table td {
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.92rem;
+    border-bottom: 1px solid #f0e6d6;
+}
+.room-table th {
+    background: #1b2d45;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+}
+.room-name {
+    font-weight: 600;
+    color: #0d1b2a;
+}
+.room-price {
+    font-weight: 700;
+    color: #0a7e8c;
+}
+
+/* Map Box */
+.show-map-box {
+    width: 100%;
+    height: 250px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 1rem;
+    border: 1px solid #f0e6d6;
+}
+.show-map-box iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* Sidebar Context Box */
+.detail-sidebar-box {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    height: fit-content;
+    border-top: 4px solid #0a7e8c;
+}
+.sidebar-meta-item {
+    margin-bottom: 1.5rem;
+}
+.sidebar-meta-item label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #8a8a8a;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+}
+.sidebar-meta-item span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0d1b2a;
+    display: block;
 }

@@ -8,7 +8,8 @@
         "transports": "Transport",
         "posts": "Stories",
         "about": "About Us",
-        "contact": "Contact"
+        "contact": "Contact",
+        "dishes": "National Dishes"
     },
     "hero": {
         "title": "Discover Xorazm",
@@ -37,7 +38,11 @@
         "day_exploration": "Day {day} Exploration",
         "route_path": "Route Path",
         "transport_comfort": "Transport & Comfort",
-        "included_transport": "Included Transport"
+        "included_transport": "Included Transport",
+        "filter_all": "All",
+        "filter_cultural": "Cultural",
+        "filter_adventure": "Adventure",
+        "filter_premium": "Premium"
     },
     "cities": {
         "title": "Destinations",
@@ -128,5 +133,50 @@
         "loading": "Loading...",
         "not_available": "N/A",
         "read_more": "Read More"
+    },
+    "carousel": {
+        "city": "Destination",
+        "festival": "Festival",
+        "hotel": "Hotel",
+        "tour": "Tour",
+        "explore_city": "Explore City",
+        "view_festival": "View Festival",
+        "view_hotel": "View Hotel",
+        "book_tour": "Book Tour",
+        "next": "Next",
+        "welcome_title": "Welcome to Xorazm Tour",
+        "welcome_subtitle": "Explore the ancient beauty and traditions of Khiva and the Khorezm region.",
+        "city_desc": "Discover the beauty of this ancient destination",
+        "festival_desc": "Experience the vibrant culture and traditions",
+        "hotel_desc": "Luxury accommodations for your comfort",
+        "tour_desc": "Unforgettable journey for {duration} days"
+    },
+    "dishes": {
+        "title": "Uzbek National Dishes",
+        "subtitle": "Gastronomic atlas of all 12 regions and Karakalpakstan",
+        "heritage": "Gastronomic Heritage",
+        "view_details": "Details",
+        "origin": "Origin Region",
+        "category": "Dish Category",
+        "add_to_tour": "Add to Gastro Tour",
+        "added_success": "This regional dish visit has been added to your gastro-itinerary! 🧭",
+        "ingredients": "Key Traditional Ingredients",
+        "history_title": "History & Culinary Excellence",
+        "regions": {
+            "all": "All Regions",
+            "xorazm": "Khorezm",
+            "qoraqalpogiston": "Karakalpakstan",
+            "tashkent": "Tashkent",
+            "samarkand": "Samarkand",
+            "bukhara": "Bukhara",
+            "fergana": "Fergana",
+            "andijan": "Andijan",
+            "namangan": "Namangan",
+            "kashkadarya": "Kashkadarya",
+            "surkhandarya": "Surxondaryo",
+            "jizzakh": "Jizzakh",
+            "syrdarya": "Syrdarya",
+            "navoi": "Navoiy"
+        }
     }
 }
