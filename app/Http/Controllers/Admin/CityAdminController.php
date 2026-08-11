@@ -134,7 +134,7 @@ class CityAdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.cities.index')->with('success', 'City updated successfully.');
+        return redirect()->route('admin.cities.edit', $city->id)->with('success', 'City updated successfully.');
     }
 
     public function destroy(City $city)

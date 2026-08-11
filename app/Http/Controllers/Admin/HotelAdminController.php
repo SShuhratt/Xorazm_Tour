@@ -152,7 +152,7 @@ class HotelAdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.hotels.index')->with('success', 'Hotel updated successfully.');
+        return redirect()->route('admin.hotels.edit', $hotel->id)->with('success', 'Hotel updated successfully.');
     }
 
     public function destroy(Hotel $hotel)

@@ -61,6 +61,7 @@ use App\Http\Controllers\Admin\HotelAdminController;
 use App\Http\Controllers\Admin\FestivalAdminController;
 use App\Http\Controllers\Admin\TransportAdminController;
 use App\Http\Controllers\Admin\PostAdminController;
+use App\Http\Controllers\Admin\DishAdminController;
 use App\Http\Controllers\Admin\ImageAdminController;
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -72,6 +73,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('festivals', FestivalAdminController::class)->except(['show']);
     Route::resource('transports', TransportAdminController::class)->except(['show']);
     Route::resource('posts', PostAdminController::class)->except(['show']);
+    Route::resource('dishes', DishAdminController::class)->except(['show']);
 
     Route::post('images/upload', [ImageAdminController::class, 'upload'])->name('images.upload');
     Route::delete('images/{image}', [ImageAdminController::class, 'destroy'])->name('images.destroy');
@@ -79,8 +81,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', function () {
-        return redirect()->route('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
 });
 

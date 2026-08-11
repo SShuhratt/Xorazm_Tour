@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\City;
+use App\Models\Dish;
 use App\Models\Festival;
 use App\Models\Hotel;
 use App\Models\Post;
@@ -23,6 +24,7 @@ class DashboardAdminController extends Controller
             'festivals_count' => Festival::count(),
             'transports_count' => Transport::count(),
             'posts_count' => Post::count(),
+            'dishes_count' => Dish::count(),
             'subscribers_count' => DB::table('newsletter_subscriptions')->count(),
         ];
 

@@ -138,7 +138,7 @@ class FestivalAdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.festivals.index')->with('success', 'Festival updated successfully.');
+        return redirect()->route('admin.festivals.edit', $festival->id)->with('success', 'Festival updated successfully.');
     }
 
     public function destroy(Festival $festival)

@@ -10,6 +10,7 @@ import {
     Calendar,
     Bus,
     FileText,
+    Utensils,
     LogOut,
     ExternalLink,
     CheckCircle2,
@@ -33,6 +34,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         { name: 'Festivals', href: '/admin/festivals', icon: Calendar },
         { name: 'Transports', href: '/admin/transports', icon: Bus },
         { name: 'Posts', href: '/admin/posts', icon: FileText },
+        { name: 'National Dishes', href: '/admin/dishes', icon: Utensils },
     ];
 
     const handleLogout = () => {

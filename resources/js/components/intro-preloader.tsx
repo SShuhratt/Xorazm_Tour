@@ -86,7 +86,7 @@ export default function IntroPreloader({ onComplete }: IntroPreloaderProps) {
                 >
                     <video
                         ref={videoRef}
-                        src="/videos/intro.mp4?v=3"
+                        src="/XT_content/animations/XTATintroanimation.mp4?v=100"
                         autoPlay
                         muted
                         playsInline

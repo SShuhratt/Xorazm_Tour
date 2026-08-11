@@ -2,7 +2,7 @@
     "nav": {
         "home": "Главная",
         "tours": "Туры",
-        "cities": "Направления",
+        "cities": "Города",
         "festivals": "Фестивали",
         "hotels": "Отели",
         "transports": "Транспорт",
@@ -98,7 +98,11 @@
         "stats_tours": "Туров проведено",
         "stats_guests": "Довольных гостей",
         "stats_years": "Лет опыта",
-        "stats_cities": "Городов охвачено"
+        "stats_cities": "Городов охвачено",
+        "cta_title": "Готовы исследовать Хорезм?",
+        "cta_subtitle": "Начните своё путешествие по чудесам древнего Хорезма с нашими опытными гидами и продуманными турами.",
+        "explore_tours": "Исследовать туры",
+        "get_in_touch": "Связаться с нами"
     },
     "contact": {
         "title": "Свяжитесь с нами",
@@ -112,8 +116,9 @@
         "success": "Ваше сообщение успешно отправлено!",
         "info_title": "Контактная информация",
         "address": "Хива, Хорезмская область, Узбекистан",
-        "phone": "+998 62 375 00 00",
-        "email_address": "info@xorazmtour.uz",
+        "phone": "+998 94 315 75 79",
+        "email_address": "xorazmtour@gmail.com",
+        "telegram": "@xorazmtourandtravels",
         "follow": "Мы в соцсетях"
     },
     "footer": {

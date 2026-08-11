@@ -2,7 +2,7 @@
     "nav": {
         "home": "Home",
         "tours": "Tours",
-        "cities": "Destinations",
+        "cities": "Cities",
         "festivals": "Festivals",
         "hotels": "Hotels",
         "transports": "Transport",
@@ -98,7 +98,11 @@
         "stats_tours": "Tours Completed",
         "stats_guests": "Happy Guests",
         "stats_years": "Years Experience",
-        "stats_cities": "Cities Covered"
+        "stats_cities": "Cities Covered",
+        "cta_title": "Ready to Explore Xorazm?",
+        "cta_subtitle": "Begin your journey through the wonders of ancient Khorezm with our expert guides and curated experiences.",
+        "explore_tours": "Explore Tours",
+        "get_in_touch": "Get in Touch"
     },
     "contact": {
         "title": "Get in Touch",
@@ -112,8 +116,9 @@
         "success": "Your message has been sent successfully!",
         "info_title": "Contact Information",
         "address": "Khiva, Xorazm Region, Uzbekistan",
-        "phone": "+998 62 375 00 00",
-        "email_address": "info@xorazmtour.uz",
+        "phone": "+998 94 315 75 79",
+        "email_address": "xorazmtour@gmail.com",
+        "telegram": "@xorazmtourandtravels",
         "follow": "Follow Us"
     },
     "footer": {

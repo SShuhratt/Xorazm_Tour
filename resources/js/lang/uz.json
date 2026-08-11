@@ -98,7 +98,11 @@
         "stats_tours": "O'tkazilgan turlar",
         "stats_guests": "Mamnun mehmonlar",
         "stats_years": "Yillik tajriba",
-        "stats_cities": "Shaharlar qamrovi"
+        "stats_cities": "Shaharlar qamrovi",
+        "cta_title": "Xorazmni kashf etishga tayyormisiz?",
+        "cta_subtitle": "Tajribali gidlarimiz va saralangan turlarimiz bilan qadimiy Xorazm mo'jizalari bo'ylab sayohatingizni boshlang.",
+        "explore_tours": "Turlarni kashf etish",
+        "get_in_touch": "Biz bilan bog'lanish"
     },
     "contact": {
         "title": "Biz bilan bog'laning",
@@ -112,8 +116,9 @@
         "success": "Xabaringiz muvaffaqiyatli yuborildi!",
         "info_title": "Aloqa ma'lumotlari",
         "address": "Xiva, Xorazm viloyati, O'zbekiston",
-        "phone": "+998 62 375 00 00",
-        "email_address": "info@xorazmtour.uz",
+        "phone": "+998 94 315 75 79",
+        "email_address": "xorazmtour@gmail.com",
+        "telegram": "@xorazmtourandtravels",
         "follow": "Bizni kuzating"
     },
     "footer": {

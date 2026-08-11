@@ -10,18 +10,21 @@ use Illuminate\Support\Facades\Storage;
 class ImageAdminController extends Controller
 {
     /**
-     * Upload an image and attach to an imageable model.
+     * Upload an image or video and attach to a model.
      */
     public function upload(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'image' => 'required|file|mimes:jpeg,png,jpg,webp,gif,mp4,webm,ogg,mov|max:51200',
             'imageable_type' => 'required|string',
             'imageable_id' => 'required|integer',
             'is_main' => 'nullable|boolean',
         ]);
 
-        $path = $request->file('image')->store('images', 'public');
+        $file = $request->file('image');
+        $isMediaVideo = str_starts_with($file->getMimeType(), 'video/');
+        $folder = $isMediaVideo ? 'videos' : 'images';
+        $path = $file->store($folder, 'public');
         $isMain = $request->boolean('is_main');
 
         $type = $request->input('imageable_type');
@@ -41,11 +44,11 @@ class ImageAdminController extends Controller
             'order' => Image::where('imageable_type', $type)->where('imageable_id', $id)->count() + 1,
         ]);
 
-        return back()->with('success', 'Image uploaded successfully.');
+        return back()->with('success', 'Media file uploaded successfully.');
     }
 
     /**
-     * Delete an image.
+     * Delete a media item.
      */
     public function destroy(Image $image)
     {
@@ -56,11 +59,11 @@ class ImageAdminController extends Controller
 
         $image->delete();
 
-        return back()->with('success', 'Image deleted successfully.');
+        return back()->with('success', 'Media item deleted successfully.');
     }
 
     /**
-     * Set an image as the main image.
+     * Set a media item as the main item.
      */
     public function setMain(Image $image)
     {
@@ -70,6 +73,6 @@ class ImageAdminController extends Controller
 
         $image->update(['is_main' => true]);
 
-        return back()->with('success', 'Main image updated.');
+        return back()->with('success', 'Main media updated.');
     }
 }

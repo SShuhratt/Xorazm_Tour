@@ -139,7 +139,7 @@ class TransportAdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.transports.index')->with('success', 'Transport updated successfully.');
+        return redirect()->route('admin.transports.edit', $transport->id)->with('success', 'Transport updated successfully.');
     }
 
     public function destroy(Transport $transport)

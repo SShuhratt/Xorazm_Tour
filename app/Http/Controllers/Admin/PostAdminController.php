@@ -127,7 +127,7 @@ class PostAdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->route('admin.posts.edit', $post->id)->with('success', 'Post updated successfully.');
     }
 
     public function destroy(Post $post)

@@ -45,16 +45,16 @@ export default function MainNavbar() {
                 <div className="flex h-20 items-center justify-between">
                     <Link
                         href={`/${locale}`}
-                        className="flex items-center gap-3 font-serif text-xl sm:text-2xl lg:text-3xl tracking-wide shrink-0"
+                        className="flex items-center gap-3 shrink-0"
                     >
                         <img 
-                            src="/XT_content/xorazmtour_logo.png" 
-                            alt="Xorazm Tour Logo" 
-                            className="h-20 w-auto object-contain py-1"
+                            src="/images/logo_transparent.png" 
+                            alt="XORAZM TOUR AND TRAVELS Logo" 
+                            className="h-16 w-auto object-contain py-1"
                         />
-                        <div className="flex items-center gap-1">
-                            <span className="text-white">XORAZM</span>
-                            <span className="text-gold">TOUR</span>
+                        <div className="flex flex-col font-serif font-bold tracking-wider leading-tight">
+                            <span className="text-white text-base sm:text-lg">XORAZM TOUR</span>
+                            <span className="text-gold text-xs sm:text-sm">AND TRAVELS</span>
                         </div>
                     </Link>
 

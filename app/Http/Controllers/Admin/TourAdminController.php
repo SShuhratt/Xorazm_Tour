@@ -20,7 +20,7 @@ class TourAdminController extends Controller
 {
     public function index()
     {
-        $tours = Tour::with(['translations', 'mainImage', 'images', 'cities', 'hotels', 'transports', 'schedules.translations'])
+        $tours = Tour::with(['translations', 'mainImage', 'images', 'cities', 'hotels', 'transports', 'schedules.translations', 'schedules.images', 'schedules.mainImage'])
             ->orderBy('id', 'desc')
             ->get();
 
@@ -51,26 +51,27 @@ class TourAdminController extends Controller
             'hotel_ids' => 'nullable|array',
             'transport_ids' => 'nullable|array',
             'schedules' => 'nullable|array',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,mp4,webm,ogg,mov|max:51200',
         ]);
 
         $slug = $request->input('slug') ?: Str::slug($request->input('translations.en.title'));
 
         $tour = Tour::create([
             'slug' => $slug,
-            'status' => $request->boolean('status', true),
+            'status' => $request->boolean('status', true) ? 'active' : 'inactive',
             'cost' => $request->input('cost'),
         ]);
 
         foreach (['en', 'ru', 'uz'] as $locale) {
             $trans = $request->input("translations.{$locale}");
             if (!empty($trans['title'])) {
+                $duration = !empty($trans['duration']) ? (int) preg_replace('/[^0-9]/', '', (string) $trans['duration']) : 0;
                 TourTranslation::create([
                     'tour_id' => $tour->id,
                     'locale' => $locale,
                     'title' => $trans['title'],
                     'route' => $trans['route'] ?? '',
-                    'duration' => $trans['duration'] ?? '',
+                    'duration' => $duration,
                     'description' => $trans['description'] ?? '',
                 ]);
             }
@@ -87,11 +88,11 @@ class TourAdminController extends Controller
         }
 
         if ($request->has('schedules')) {
-            foreach ($request->input('schedules') as $schedData) {
+            foreach ($request->input('schedules') as $idx => $schedData) {
                 if (!empty($schedData['day'])) {
                     $schedule = TourSchedule::create([
                         'tour_id' => $tour->id,
-                        'day' => $schedData['day'],
+                        'day' => (int) $schedData['day'],
                         'time' => $schedData['time'] ?? '09:00',
                     ]);
 
@@ -104,6 +105,17 @@ class TourAdminController extends Controller
                                 'description' => $schedData['translations'][$locale]['description'] ?? '',
                             ]);
                         }
+                    }
+
+                    if ($request->hasFile("schedules.{$idx}.image")) {
+                        $path = $request->file("schedules.{$idx}.image")->store('images', 'public');
+                        Image::create([
+                            'imageable_type' => TourSchedule::class,
+                            'imageable_id' => $schedule->id,
+                            'path' => $path,
+                            'is_main' => true,
+                            'order' => 1,
+                        ]);
                     }
                 }
             }
@@ -125,7 +137,7 @@ class TourAdminController extends Controller
 
     public function edit(Tour $tour)
     {
-        $tour->load(['translations', 'mainImage', 'images', 'cities', 'hotels', 'transports', 'schedules.translations']);
+        $tour->load(['translations', 'mainImage', 'images', 'cities', 'hotels', 'transports', 'schedules.translations', 'schedules.images', 'schedules.mainImage']);
 
         return Inertia::render('admin/tours/edit', [
             'tour' => $tour,
@@ -147,24 +159,25 @@ class TourAdminController extends Controller
             'hotel_ids' => 'nullable|array',
             'transport_ids' => 'nullable|array',
             'schedules' => 'nullable|array',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,mp4,webm,ogg,mov|max:51200',
         ]);
 
         $tour->update([
             'slug' => $request->input('slug'),
-            'status' => $request->boolean('status'),
+            'status' => $request->boolean('status') ? 'active' : 'inactive',
             'cost' => $request->input('cost'),
         ]);
 
         foreach (['en', 'ru', 'uz'] as $locale) {
             $trans = $request->input("translations.{$locale}");
             if (!empty($trans['title'])) {
+                $duration = !empty($trans['duration']) ? (int) preg_replace('/[^0-9]/', '', (string) $trans['duration']) : 0;
                 TourTranslation::updateOrCreate(
                     ['tour_id' => $tour->id, 'locale' => $locale],
                     [
                         'title' => $trans['title'],
                         'route' => $trans['route'] ?? '',
-                        'duration' => $trans['duration'] ?? '',
+                        'duration' => $duration,
                         'description' => $trans['description'] ?? '',
                     ]
                 );
@@ -177,11 +190,11 @@ class TourAdminController extends Controller
 
         if ($request->has('schedules')) {
             $existingSchedIds = [];
-            foreach ($request->input('schedules') as $schedData) {
+            foreach ($request->input('schedules') as $idx => $schedData) {
                 if (!empty($schedData['day'])) {
                     $schedule = TourSchedule::updateOrCreate(
                         ['id' => $schedData['id'] ?? null, 'tour_id' => $tour->id],
-                        ['day' => $schedData['day'], 'time' => $schedData['time'] ?? '09:00']
+                        ['day' => (int) $schedData['day'], 'time' => $schedData['time'] ?? '09:00']
                     );
                     $existingSchedIds[] = $schedule->id;
 
@@ -195,6 +208,21 @@ class TourAdminController extends Controller
                                 ]
                             );
                         }
+                    }
+
+                    if ($request->hasFile("schedules.{$idx}.image")) {
+                        $path = $request->file("schedules.{$idx}.image")->store('images', 'public');
+                        Image::where('imageable_type', TourSchedule::class)
+                            ->where('imageable_id', $schedule->id)
+                            ->update(['is_main' => false]);
+
+                        Image::create([
+                            'imageable_type' => TourSchedule::class,
+                            'imageable_id' => $schedule->id,
+                            'path' => $path,
+                            'is_main' => true,
+                            'order' => 1,
+                        ]);
                     }
                 }
             }
@@ -213,7 +241,7 @@ class TourAdminController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.tours.index')->with('success', 'Tour updated successfully.');
+        return redirect()->route('admin.tours.edit', $tour->id)->with('success', 'Tour updated successfully.');
     }
 
     public function destroy(Tour $tour)
