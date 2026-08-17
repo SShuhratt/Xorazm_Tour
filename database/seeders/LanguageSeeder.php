@@ -13,9 +13,8 @@ class LanguageSeeder extends Seeder
      */
     public function run(): void
     {
-        Language::create(['code' => 'uz', 'name' => 'Uzbek']);
-        Language::create(['code' => 'ru', 'name' => 'Russian']);
-        Language::create(['code' => 'en', 'name' => 'English']);
-
+        Language::firstOrCreate(['code' => 'uz'], ['name' => 'Uzbek']);
+        Language::firstOrCreate(['code' => 'ru'], ['name' => 'Russian']);
+        Language::firstOrCreate(['code' => 'en'], ['name' => 'English']);
     }
 }

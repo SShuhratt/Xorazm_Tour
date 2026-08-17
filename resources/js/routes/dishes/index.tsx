@@ -69,7 +69,7 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
 
     const cardVariants = {
         hidden: { opacity: 0, y: 30 },
-        show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 80 } },
+        show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 80 } },
         exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
     };
 

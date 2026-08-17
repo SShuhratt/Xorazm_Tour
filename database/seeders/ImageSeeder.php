@@ -215,7 +215,7 @@ class ImageSeeder extends Seeder
         $dir = 'XT_content/other';
         if (Storage::disk('public')->exists($dir)) {
             $files = Storage::disk('public')->allFiles($dir);
-            $images = array_filter($files, fn($file) => str_ends_with(strtolower($file), '.jpg'));
+            $images = array_filter($files, fn($file) => str_ends_with(strtolower($file), '.jpg') && !str_contains($file, 'photo_2019-07-16_10-35-43'));
             if (!empty($images)) {
                 return array_values($images);
             }
@@ -225,7 +225,7 @@ class ImageSeeder extends Seeder
         $dir = 'XT_content';
         if (Storage::disk('public')->exists($dir)) {
             $files = Storage::disk('public')->allFiles($dir);
-            $images = array_filter($files, fn($file) => str_ends_with(strtolower($file), '.jpg'));
+            $images = array_filter($files, fn($file) => str_ends_with(strtolower($file), '.jpg') && !str_contains($file, 'photo_2019-07-16_10-35-43'));
             if (!empty($images)) {
                 return array_values($images);
             }
