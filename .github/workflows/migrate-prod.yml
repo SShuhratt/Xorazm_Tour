@@ -48,7 +48,8 @@ jobs:
           APP_ENV: production
           APP_KEY: ${{ secrets.APP_KEY }}
           DB_CONNECTION: pgsql
-          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          DB_URL: ${{ secrets.PROD_DATABASE_URL }}
+          DB_SSLMODE: require
           ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
