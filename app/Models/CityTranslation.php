@@ -18,6 +18,14 @@ class CityTranslation extends Model
         'locale',       // uz, ru, en
         'name',
         'description',
+        'era',
+        'heritage_status',
+        'recommended_time',
+        'highlights',
+    ];
+
+    protected $casts = [
+        'highlights' => 'array',
     ];
 
     public function city(): BelongsTo

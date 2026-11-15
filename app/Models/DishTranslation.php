@@ -14,8 +14,16 @@ class DishTranslation extends Model
         'dish_id',
         'locale',
         'name',
+        'origin',
+        'type',
         'short_description',
         'description',
+        'history',
+        'ingredients',
+    ];
+
+    protected $casts = [
+        'ingredients' => 'array',
     ];
 
     public function dish(): BelongsTo

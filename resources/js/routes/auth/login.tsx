@@ -1,7 +1,7 @@
 import React, { FormEvent } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Lock, User, Key, ArrowRight, Compass } from 'lucide-react';
+import { Lock, User, ArrowRight, Compass } from 'lucide-react';
 import AlertError from '@/components/alert-error';
 
 interface LoginProps {

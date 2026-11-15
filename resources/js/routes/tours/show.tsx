@@ -3,7 +3,14 @@ import { Head, Link } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tour, TourSchedule } from '@/types';
 import MainLayout from '@/layouts/main-layout';
+import BookingModal from '@/components/booking-modal';
 import { useTranslations } from '@/hooks/use-translations';
+import {
+    Check,
+    X,
+    Users,
+    Sparkles,
+} from 'lucide-react';
 
 interface Props {
     tour: Tour;
@@ -11,9 +18,12 @@ interface Props {
 
 function Show({ tour }: Props) {
     const { t, locale } = useTranslations();
-    const tourT = tour.translations.find(trans => trans.locale === locale) || tour.translations[0];
+    const tourT = tour.translations.find(trans => trans.locale === locale)
+        || tour.translations.find(trans => trans.locale === 'en')
+        || tour.translations[0];
     const [selectedEventId, setSelectedEventId] = React.useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [isBookingModalOpen, setIsBookingModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         if (tour.schedules && tour.schedules.length > 0) {
@@ -36,19 +46,29 @@ function Show({ tour }: Props) {
     }, {});
 
     const activeEvent = React.useMemo(() => {
-        if (!selectedEventId || !tour.schedules) return null;
-        return tour.schedules.find(e => e.id === selectedEventId) || tour.schedules[0];
+        if (!tour.schedules || tour.schedules.length === 0) return null;
+        if (selectedEventId) {
+            const found = tour.schedules.find(e => e.id === selectedEventId);
+            if (found) return found;
+        }
+        return tour.schedules[0];
     }, [selectedEventId, tour.schedules]);
 
     const activeImage = React.useMemo(() => {
-        if (!activeEvent || !tour.schedules) return tour.main_image;
-        const index = tour.schedules.findIndex(e => e.id === activeEvent.id);
-        return tour.images?.[index % (tour.images?.length || 1)] || tour.main_image;
-    }, [activeEvent, tour.images, tour.main_image, tour.schedules]);
+        if (!activeEvent) return tour.main_image;
+        return activeEvent.main_image || activeEvent.images?.[0] || tour.main_image;
+    }, [activeEvent, tour.main_image]);
+
+    const pricingTiers = (Array.isArray(tourT?.pricing_tiers) && tourT.pricing_tiers.length > 0)
+        ? tourT.pricing_tiers
+        : (Array.isArray(tour.pricing_tiers) ? tour.pricing_tiers : []);
+    const hasPricingTiers = pricingTiers.length > 0;
+    const hasIncluded = Array.isArray(tourT?.included) && tourT.included.length > 0;
+    const hasNotIncluded = Array.isArray(tourT?.not_included) && tourT.not_included.length > 0;
 
     return (
         <div className="bg-cream min-h-screen">
-            <Head title={tourT.title} />
+            <Head title={tourT?.title || tour.slug} />
 
             {/* Header / Hero */}
             <section className="page-hero relative min-h-[45vh] flex items-end overflow-hidden bg-navy">
@@ -56,7 +76,7 @@ function Show({ tour }: Props) {
                     <img 
                         src={tour.main_image?.path} 
                         className="w-full h-full object-cover opacity-40" 
-                        alt={tourT.title} 
+                        alt={tourT?.title || tour.slug} 
                     />
                     <div className="page-hero-gradient absolute inset-0 bg-gradient-to-t from-navy to-navy/40 z-1" />
                 </div>
@@ -65,7 +85,7 @@ function Show({ tour }: Props) {
                         {locale === 'ru' ? 'Программа Тура' : locale === 'uz' ? 'Sayohat Dasturi' : 'Tour Itinerary'}
                     </span>
                     <h1 className="font-serif text-white mb-4 text-4xl md:text-5xl drop-shadow-md">
-                        {tourT.title}
+                        {tourT?.title || tour.slug}
                     </h1>
                 </div>
             </section>
@@ -81,70 +101,192 @@ function Show({ tour }: Props) {
                             {locale === 'ru' ? 'Маршрут' : locale === 'uz' ? 'Yo\'nalish' : 'Route Path'}
                         </span>
                         <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                            {tour.cities?.map((city, cIndex) => {
-                                const cityT = city.translations.find(ct => ct.locale === locale) || city.translations[0];
-                                return (
-                                    <React.Fragment key={city.id}>
-                                        <Link href={`/${locale}/cities/${city.slug}`} className="text-navy font-serif font-bold text-sm hover:text-gold transition-colors">
-                                            {cityT.name}
-                                        </Link>
-                                        {cIndex < (tour.cities?.length || 0) - 1 && <span className="text-gold-muted font-bold text-[10px]">→</span>}
-                                    </React.Fragment>
-                                );
-                            })}
+                            {tour.cities && tour.cities.length > 0 ? (
+                                tour.cities.map((city, cIndex) => {
+                                    const cityT = city.translations.find(ct => ct.locale === locale)
+                                        || city.translations.find(ct => ct.locale === 'en')
+                                        || city.translations[0];
+                                    return (
+                                        <React.Fragment key={city.id}>
+                                            <Link href={`/${locale}/cities/${city.slug}`} className="text-navy font-serif font-bold text-sm hover:text-gold transition-colors">
+                                                {cityT?.name || city.slug}
+                                            </Link>
+                                            {cIndex < (tour.cities?.length || 0) - 1 && <span className="text-gold-muted font-bold text-[10px]">→</span>}
+                                        </React.Fragment>
+                                    );
+                                })
+                            ) : (
+                                <span className="text-navy font-serif font-bold text-sm">{tourT?.route || 'Silk Road'}</span>
+                            )}
                         </div>
                     </div>
+
                     <div className="summary-dashboard-item">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">
                             {locale === 'ru' ? 'Длительность' : locale === 'uz' ? 'Davomiyligi' : 'Duration'}
                         </span>
                         <span className="text-navy font-bold text-base mt-1">
-                            {locale === 'ru'
-                                ? `${tourT.duration} Дней / ${tourT.duration - 1} Ночей`
-                                : locale === 'uz'
-                                ? `${tourT.duration} Kun / ${tourT.duration - 1} Tun`
-                                : `${tourT.duration} Days / ${tourT.duration - 1} Nights`}
+                            {tourT?.duration ? (
+                                typeof tourT.duration === 'string' && /[a-zA-Zа-яА-Я]/.test(tourT.duration)
+                                    ? tourT.duration
+                                    : (() => {
+                                        const days = Math.max(1, Number(tourT.duration) || 1);
+                                        const nights = Math.max(0, days - 1);
+                                        if (nights === 0) {
+                                            return locale === 'ru' ? `${days} День` : locale === 'uz' ? `${days} Kun` : `${days} Day`;
+                                        }
+                                        return locale === 'ru'
+                                            ? `${days} Дней / ${nights} Ночей`
+                                            : locale === 'uz'
+                                            ? `${days} Kun / ${nights} Tun`
+                                            : `${days} Days / ${nights} Nights`;
+                                    })()
+                            ) : 'Flexible'}
                         </span>
                     </div>
+
                     <div className="summary-dashboard-item">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">
-                            {locale === 'ru' ? 'Размер Группы' : locale === 'uz' ? 'Guruh Hajmi' : 'Group Size'}
+                            {t('tours.transportation')}
                         </span>
-                        <span className="text-navy font-bold text-base mt-1">
-                            {tour.slug.includes('premium') 
-                                ? (locale === 'ru' ? 'Максимум 6 чел' : locale === 'uz' ? 'Maksimal 6 kishi' : 'Max 6 people')
-                                : tour.slug.includes('desert')
-                                ? (locale === 'ru' ? 'Максимум 8 чел' : locale === 'uz' ? 'Maksimal 8 kishi' : 'Max 8 people')
-                                : (locale === 'ru' ? 'Максимум 12 чел' : locale === 'uz' ? 'Maksimal 12 kishi' : 'Max 12 people')
-                            }
+                        <span className="text-navy font-bold text-sm mt-1 line-clamp-2">
+                            {tourT?.custom_transport || (
+                                tour.transports && tour.transports.length > 0 
+                                    ? tour.transports.map(tr => tr.translations.find(tt => tt.locale === locale)?.name || tr.slug).join(', ')
+                                    : 'Comfortable Bus / Transfers'
+                            )}
                         </span>
                     </div>
-                    <div className="summary-dashboard-item border-none">
-                        <div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-0.5 block">
-                                {locale === 'ru' ? 'Стоимость' : locale === 'uz' ? 'Narxi' : 'Price'}
-                            </span>
-                            <span className="font-serif text-2xl font-bold text-turquoise">
-                                ${tour.cost}
-                                <span className="font-sans text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-1">
-                                    / {locale === 'ru' ? 'чел' : locale === 'uz' ? 'kishi' : 'person'}
-                                </span>
-                            </span>
-                        </div>
+
+                    <div className="summary-dashboard-item border-none flex items-center justify-center">
                         <button 
-                            onClick={() => alert(locale === 'ru' ? 'Заявка на бронирование принята! 🧭' : locale === 'uz' ? 'Sayohat arizangiz qabul qilindi! 🧭' : 'Booking request received! 🧭')}
-                            className="summary-dashboard-btn mt-3"
+                            type="button"
+                            onClick={() => setIsBookingModalOpen(true)}
+                            className="summary-dashboard-btn w-full py-3.5 text-sm font-bold uppercase tracking-wider shadow-md hover:shadow-lg transition-all cursor-pointer"
                         >
                             {locale === 'ru' ? 'Забронировать' : locale === 'uz' ? 'Joy Band Qilish' : 'Book Now'}
                         </button>
                     </div>
                 </div>
 
-                <div className="prose prose-lg text-gray-600 max-w-none mb-20">
-                    <p className="italic text-xl border-l-4 border-gold pl-6 py-4 bg-gold/5 shadow-md rounded-r-lg text-navy leading-relaxed font-serif">
-                        {tourT.description}
-                    </p>
-                </div>
+                {/* Tour Description */}
+                {tourT?.description && (
+                    <div className="prose prose-lg text-gray-600 max-w-none mb-14">
+                        <p className="italic text-xl border-l-4 border-gold pl-6 py-4 bg-gold/5 shadow-md rounded-r-lg text-navy leading-relaxed font-serif">
+                            {tourT.description}
+                        </p>
+                    </div>
+                )}
+
+                {/* TIERED GROUP PRICING & SINGLE SUPPLEMENT SECTION */}
+                {(hasPricingTiers || tour.single_supplement) && (
+                    <div className="mb-16 bg-white rounded-2xl border border-gold/30 shadow-xl overflow-hidden p-6 sm:p-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gold/15 mb-6">
+                            <div>
+                                <span className="text-xs font-bold uppercase tracking-widest text-gold block mb-1">
+                                    {t('tours.pricing_table')}
+                                </span>
+                                <h3 className="font-serif text-2xl sm:text-3xl text-navy font-bold">
+                                    {locale === 'ru' ? 'Стоимость тура в зависимости от группы' : locale === 'uz' ? 'Guruh hajmiga qarab tur narxi' : 'Tour Cost by Group Size'}
+                                </h3>
+                            </div>
+                            {tour.single_supplement && (
+                                <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-xl text-xs font-bold text-navy">
+                                    <Sparkles className="w-4 h-4 text-gold shrink-0" />
+                                    <span>
+                                        {locale === 'ru' 
+                                            ? `*Доплата за 1-местное размещение: $${tour.single_supplement} с человека`
+                                            : locale === 'uz'
+                                            ? `*Bir kishilik xona uchun qo'shimcha to'lov: $${tour.single_supplement} kishiga`
+                                            : `*Single supplement: $${tour.single_supplement} per person`}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {hasPricingTiers && (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-navy/5 text-navy font-serif text-sm uppercase tracking-wider border-b border-gold/20">
+                                            <th className="py-3 px-4 font-bold rounded-l-lg">{t('tours.group_size')}</th>
+                                            <th className="py-3 px-4 font-bold rounded-r-lg text-right">{t('tours.price_per_person')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gold/10">
+                                        {pricingTiers.map((tier, tIdx) => (
+                                            <tr key={tIdx} className="hover:bg-gold/5 transition-colors">
+                                                <td className="py-3.5 px-4 text-navy font-medium flex items-center gap-2">
+                                                    <Users className="w-4 h-4 text-gold" />
+                                                    <span>{tier.group_size}</span>
+                                                </td>
+                                                <td className="py-3.5 px-4 text-right font-serif font-bold text-lg text-turquoise">
+                                                    ${tier.price_per_person}
+                                                    <span className="text-xs font-sans text-gray-500 font-normal ml-1">
+                                                        / {locale === 'ru' ? 'чел' : locale === 'uz' ? 'kishi' : 'person'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* THE PRICE INCLUDES & NOT INCLUDED IN THE PRICE */}
+                {(hasIncluded || hasNotIncluded) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+                        {/* Included */}
+                        {hasIncluded && (
+                            <div className="bg-white rounded-2xl border border-emerald-900/20 shadow-lg p-6 sm:p-8 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2.5 pb-4 mb-5 border-b border-emerald-100">
+                                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+                                            <Check className="w-4 h-4 stroke-[3]" />
+                                        </div>
+                                        <h3 className="font-serif text-2xl font-bold text-navy">
+                                            {t('tours.price_includes')}
+                                        </h3>
+                                    </div>
+                                    <ul className="space-y-3.5">
+                                        {tourT.included!.map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 leading-relaxed">
+                                                <span className="text-emerald-600 font-bold text-base mt-0.5 shrink-0">✓</span>
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Not Included */}
+                        {hasNotIncluded && (
+                            <div className="bg-white rounded-2xl border border-rose-900/20 shadow-lg p-6 sm:p-8 flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2.5 pb-4 mb-5 border-b border-rose-100">
+                                        <div className="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-700">
+                                            <X className="w-4 h-4 stroke-[3]" />
+                                        </div>
+                                        <h3 className="font-serif text-2xl font-bold text-navy">
+                                            {t('tours.price_not_includes')}
+                                        </h3>
+                                    </div>
+                                    <ul className="space-y-3.5">
+                                        {tourT.not_included!.map((item, idx) => (
+                                            <li key={idx} className="flex items-start gap-3 text-sm text-slate-700 leading-relaxed">
+                                                <span className="text-rose-500 font-bold text-base mt-0.5 shrink-0">✕</span>
+                                                <span>{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Timeline Itinerary */}
                 <h3 className="font-serif text-4xl text-navy mb-12 border-b-2 border-gold/20 pb-4 inline-block">{t('tours.detailed_itinerary')}</h3>
@@ -164,7 +306,8 @@ function Show({ tour }: Props) {
                                     <div className="space-y-3 w-full">
                                         {events.map((event) => {
                                             const et = event.translations.find(st => st.locale === locale) || event.translations[0];
-                                            const isSelected = event.id === (selectedEventId ?? events[0]?.id);
+                                            const isSelected = event.id === activeEvent?.id;
+                                            const eventImg = event.main_image || event.images?.[0];
                                             return (
                                                 <div
                                                     key={event.id}
@@ -176,11 +319,23 @@ function Show({ tour }: Props) {
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-3 w-full">
-                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
-                                                            isSelected ? 'bg-gold/25 text-gold' : 'bg-navy/5 text-navy'
-                                                        }`}>
-                                                            {getTimeIcon(event.time)}
-                                                        </div>
+                                                        {eventImg ? (
+                                                            <div className={`w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border shadow-sm ${
+                                                                isSelected ? 'border-gold ring-1 ring-gold/50' : 'border-gold/30'
+                                                            }`}>
+                                                                <img
+                                                                    src={eventImg.path}
+                                                                    alt={et.title}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${
+                                                                isSelected ? 'bg-gold/25 text-gold' : 'bg-navy/5 text-navy'
+                                                            }`}>
+                                                                {getTimeIcon(event.time)}
+                                                            </div>
+                                                        )}
                                                         <div className="flex-1 min-w-0">
                                                             {event.time && (
                                                                 <span className={`font-mono text-[10px] font-bold block ${
@@ -281,11 +436,28 @@ function Show({ tour }: Props) {
                 )}
 
                 {/* Transport Section */}
-                <section className="mt-32 pt-16 border-t border-gold/20">
+                <section className="mt-28 pt-12 border-t border-gold/20">
                     <h3 className="font-serif text-3xl text-navy mb-8">{t('tours.transport_comfort')}</h3>
+                    
+                    {tourT?.custom_transport && (
+                        <div className="mb-6 p-5 bg-gold/10 border border-gold/30 rounded-2xl flex items-center gap-4">
+                            <div className="w-12 h-12 bg-navy text-gold rounded-xl flex items-center justify-center text-xl shrink-0">
+                                ✈️
+                            </div>
+                            <div>
+                                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
+                                    {t('tours.custom_transport_info')}
+                                </span>
+                                <p className="font-serif font-bold text-navy text-lg">{tourT.custom_transport}</p>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {tour.transports?.map((transport) => {
-                            const transT = transport.translations.find(tt => tt.locale === locale) || transport.translations[0];
+                            const transT = transport.translations.find(tt => tt.locale === locale)
+                                || transport.translations.find(tt => tt.locale === 'en')
+                                || transport.translations[0];
                             return (
                                 <div key={transport.id} className="flex items-center gap-6 bg-white p-6 rounded-2xl border border-gold/15 shadow-md hover:border-gold/40 hover:shadow-xl transition-all duration-300">
                                     <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center text-3xl border border-gold/20 text-gold">
@@ -293,7 +465,7 @@ function Show({ tour }: Props) {
                                     </div>
                                     <div>
                                         <p className="text-xs uppercase tracking-widest text-gray-400 font-bold mb-1">{t('tours.included_transport')}</p>
-                                        <p className="text-lg font-serif text-navy font-bold">{transT.name}</p>
+                                        <p className="text-lg font-serif text-navy font-bold">{transT?.name || transport.slug}</p>
                                     </div>
                                 </div>
                             );
@@ -301,6 +473,17 @@ function Show({ tour }: Props) {
                     </div>
                 </section>
             </div>
+
+            <BookingModal
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                locale={locale as 'en' | 'ru' | 'uz'}
+                inquiryType="tour"
+                tourId={tour.id}
+                subjectTitle={tourT?.title || tour.slug}
+                baseCost={tour.cost}
+                pricingTiers={pricingTiers}
+            />
         </div>
     );
 }

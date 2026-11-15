@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Utensils, Plus, Edit, Trash2, Search, CheckCircle, XCircle } from 'lucide-react';
+import { Dish } from '@/types';
 
 interface DishesIndexProps {
-    dishes: any[];
+    dishes: Dish[];
 }
 
 export default function DishesIndex({ dishes = [] }: DishesIndexProps) {
     const [search, setSearch] = useState('');
 
     const filtered = dishes.filter((dish) => {
-        const enName = dish.translations?.find((t: any) => t.locale === 'en')?.name || dish.slug || '';
+        const enName = dish.translations?.find((t) => t.locale === 'en')?.name || dish.slug || '';
         return enName.toLowerCase().includes(search.toLowerCase()) || dish.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -61,7 +62,7 @@ export default function DishesIndex({ dishes = [] }: DishesIndexProps) {
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((dish) => {
-                                        const enTrans = dish.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = dish.translations?.find((t) => t.locale === 'en');
                                         const image = dish.main_image?.path || dish.images?.[0]?.path;
                                         return (
                                             <tr key={dish.id} className="hover:bg-slate-800/40 transition-colors">

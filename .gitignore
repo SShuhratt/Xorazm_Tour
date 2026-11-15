@@ -27,3 +27,7 @@ yarn-error.log
 /.vscode
 /.zed
 /XT_content
+.vercel
+.env*
+dnsrecords*
+/database/database.sqlite

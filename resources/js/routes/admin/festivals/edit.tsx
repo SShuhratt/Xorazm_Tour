@@ -2,31 +2,63 @@ import React, { FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import ImageUploadManager from '@/components/admin/image-upload-manager';
-import { ArrowLeft, Save, Globe } from 'lucide-react';
+import TranslationCopyBar from '@/components/admin/translation-copy-bar';
+import { FormErrorsBanner } from '@/components/admin/form-errors-banner';
+import { autoTranslateObject } from '@/utils/auto-translate';
+import { ArrowLeft, Save } from 'lucide-react';
+import { City, Festival } from '@/types';
 
 interface FestivalEditProps {
-    festival?: any;
-    cities?: any[];
+    festival?: Festival | null;
+    cities?: City[];
 }
 
 export default function FestivalEdit({ festival, cities = [] }: FestivalEditProps) {
     const isEditing = !!festival;
     const [activeTab, setActiveTab] = useState<'en' | 'ru' | 'uz'>('en');
+    const [isTranslating, setIsTranslating] = useState(false);
 
     const getTrans = (loc: string) => {
-        return festival?.translations?.find((t: any) => t.locale === loc) || { title: '', description: '' };
+        return (
+            festival?.translations?.find((t) => t.locale === loc) || {
+                title: '',
+                description: '',
+                event_season: '',
+                festival_type: '',
+                highlight: '',
+            }
+        );
     };
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         slug: festival?.slug || '',
         status: festival ? Boolean(festival.status) : true,
         latitude: festival?.latitude || '',
         longitude: festival?.longitude || '',
-        city_id: festival?.translations?.[0]?.city_id || (cities[0]?.id || 1),
+        video_url: festival?.video_url || '',
+        city_id: festival?.city_id ?? (cities[0]?.id || ''),
         translations: {
-            en: { title: getTrans('en').title || '', description: getTrans('en').description || '' },
-            ru: { title: getTrans('ru').title || '', description: getTrans('ru').description || '' },
-            uz: { title: getTrans('uz').title || '', description: getTrans('uz').description || '' },
+            en: {
+                title: getTrans('en').title || '',
+                description: getTrans('en').description || '',
+                event_season: getTrans('en').event_season || '',
+                festival_type: getTrans('en').festival_type || '',
+                highlight: getTrans('en').highlight || '',
+            },
+            ru: {
+                title: getTrans('ru').title || '',
+                description: getTrans('ru').description || '',
+                event_season: getTrans('ru').event_season || '',
+                festival_type: getTrans('ru').festival_type || '',
+                highlight: getTrans('ru').highlight || '',
+            },
+            uz: {
+                title: getTrans('uz').title || '',
+                description: getTrans('uz').description || '',
+                event_season: getTrans('uz').event_season || '',
+                festival_type: getTrans('uz').festival_type || '',
+                highlight: getTrans('uz').highlight || '',
+            },
         },
         image: null as File | null,
     });
@@ -34,7 +66,10 @@ export default function FestivalEdit({ festival, cities = [] }: FestivalEditProp
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (isEditing) {
-            put(`/admin/festivals/${festival.id}`);
+            post(`/admin/festivals/${festival.id}`, {
+                preserveScroll: true,
+                headers: { 'X-HTTP-Method-Override': 'PUT' },
+            });
         } else {
             post('/admin/festivals');
         }
@@ -50,6 +85,34 @@ export default function FestivalEdit({ festival, cities = [] }: FestivalEditProp
         });
     };
 
+    const handleCopyFrom = (fromLang: 'en' | 'ru' | 'uz') => {
+        const sourceData = data.translations[fromLang];
+        setData('translations', {
+            ...data.translations,
+            [activeTab]: {
+                title: sourceData.title || '',
+                description: sourceData.description || '',
+                event_season: sourceData.event_season || '',
+                festival_type: sourceData.festival_type || '',
+                highlight: sourceData.highlight || '',
+            },
+        });
+    };
+
+    const handleTranslateFrom = async (fromLang: 'en' | 'ru' | 'uz') => {
+        setIsTranslating(true);
+        try {
+            const sourceData = data.translations[fromLang];
+            const translated = await autoTranslateObject(sourceData, activeTab, fromLang);
+            setData('translations', {
+                ...data.translations,
+                [activeTab]: translated,
+            });
+        } finally {
+            setIsTranslating(false);
+        }
+    };
+
     return (
         <AdminLayout title={isEditing ? `Edit Festival: ${festival.slug}` : 'Create New Festival'}>
             <Head title={isEditing ? 'Edit Festival' : 'Create Festival'} />
@@ -63,6 +126,7 @@ export default function FestivalEdit({ festival, cities = [] }: FestivalEditProp
                 </Link>
 
                 <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
+                    <FormErrorsBanner errors={errors} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 border-b border-slate-800">
                         <div>
                             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Slug URL</label>
@@ -71,6 +135,31 @@ export default function FestivalEdit({ festival, cities = [] }: FestivalEditProp
                                 value={data.slug}
                                 onChange={(e) => setData('slug', e.target.value)}
                                 placeholder="e.g. lazgi-dance-festival"
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Primary City</label>
+                            <select
+                                value={data.city_id}
+                                onChange={(e) => setData('city_id', e.target.value ? Number(e.target.value) : '')}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                            >
+                                <option value="">-- Select City --</option>
+                                {cities.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.translations?.[0]?.name || c.slug}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Video URL (Optional)</label>
+                            <input
+                                type="text"
+                                value={data.video_url}
+                                onChange={(e) => setData('video_url', e.target.value)}
+                                placeholder="/XT_content/festivals/..."
                                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
                             />
                         </div>
@@ -97,25 +186,14 @@ export default function FestivalEdit({ festival, cities = [] }: FestivalEditProp
                     </div>
 
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                            <div className="flex items-center gap-2 text-xs font-semibold text-gold uppercase tracking-wider">
-                                <Globe className="w-4 h-4" /> Festival Multilingual Info
-                            </div>
-                            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                                {(['en', 'ru', 'uz'] as const).map((lang) => (
-                                    <button
-                                        key={lang}
-                                        type="button"
-                                        onClick={() => setActiveTab(lang)}
-                                        className={`px-3 py-1 text-xs font-bold uppercase rounded-lg transition-all ${
-                                            activeTab === lang ? 'bg-gold text-slate-950' : 'text-slate-400 hover:text-white'
-                                        }`}
-                                    >
-                                        {lang}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        <TranslationCopyBar
+                            title="Festival Details"
+                            activeTab={activeTab}
+                            onTabChange={setActiveTab}
+                            onCopyFrom={handleCopyFrom}
+                            onTranslateFrom={handleTranslateFrom}
+                            isTranslating={isTranslating}
+                        />
 
                         <div className="space-y-4">
                             <div>
@@ -130,6 +208,45 @@ export default function FestivalEdit({ festival, cities = [] }: FestivalEditProp
                                     placeholder={`Festival name in ${activeTab.toUpperCase()}`}
                                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                        Event Season ({activeTab.toUpperCase()})
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.translations[activeTab].event_season}
+                                        onChange={(e) => handleTransChange(activeTab, 'event_season', e.target.value)}
+                                        placeholder="e.g. August / Biennial"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                        Festival Type ({activeTab.toUpperCase()})
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.translations[activeTab].festival_type}
+                                        onChange={(e) => handleTransChange(activeTab, 'festival_type', e.target.value)}
+                                        placeholder="e.g. UNESCO Heritage Dance"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                        Key Highlight ({activeTab.toUpperCase()})
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.translations[activeTab].highlight}
+                                        onChange={(e) => handleTransChange(activeTab, 'highlight', e.target.value)}
+                                        placeholder="e.g. Ichan Kala Open Stage"
+                                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold"
+                                    />
+                                </div>
                             </div>
 
                             <div>

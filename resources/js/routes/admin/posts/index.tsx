@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { FileText, Plus, Edit, Trash2, Search, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+import { Post } from '@/types';
 
 interface PostsIndexProps {
-    posts: any[];
+    posts: Post[];
 }
 
 export default function PostsIndex({ posts = [] }: PostsIndexProps) {
     const [search, setSearch] = useState('');
 
     const filtered = posts.filter((post) => {
-        const enTitle = post.translations?.find((t: any) => t.locale === 'en')?.title || post.slug || '';
+        const enTitle = post.translations?.find((t) => t.locale === 'en')?.title || post.slug || '';
         return enTitle.toLowerCase().includes(search.toLowerCase()) || post.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -60,7 +61,7 @@ export default function PostsIndex({ posts = [] }: PostsIndexProps) {
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((post) => {
-                                        const enTrans = post.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = post.translations?.find((t) => t.locale === 'en');
                                         const image = post.main_image?.path || post.images?.[0]?.path;
                                         return (
                                             <tr key={post.id} className="hover:bg-slate-800/40 transition-colors">

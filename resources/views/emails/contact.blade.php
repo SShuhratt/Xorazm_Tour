@@ -75,7 +75,7 @@
 
         <div class="field">
             <div class="field-label">Message</div>
-            <div class="field-value" style="white-space: pre-wrap;">{{ $message }}</div>
+            <div class="field-value" style="white-space: pre-wrap;">{{ $contactMessage }}</div>
         </div>
 
         <div class="footer">

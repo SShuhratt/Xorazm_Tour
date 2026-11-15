@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
@@ -12,7 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [
             __DIR__.'/../routes/web.php',
-            __DIR__.'/../routes/settings.php',
         ],
         api: __DIR__.'/../routes/api/v1/api.php',
         apiPrefix: 'api/v1',
@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+        ]);
 
         $middleware->web(append: [
             HandleAppearance::class,

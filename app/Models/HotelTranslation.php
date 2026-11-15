@@ -15,11 +15,17 @@ class HotelTranslation extends Model
 
     protected $fillable = [
         'hotel_id',
-        'city_id',
         'locale',
         'title',
         'address',
         'description',
+        'amenities',
+        'rooms',
+    ];
+
+    protected $casts = [
+        'amenities' => 'array',
+        'rooms' => 'array',
     ];
 
     public function hotel(): BelongsTo

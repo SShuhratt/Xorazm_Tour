@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Tour } from '@/types';
 import MainLayout from '@/layouts/main-layout';
 import CardCarousel from '@/components/card-carousel';
-import { Clock, ArrowRight, Users } from 'lucide-react';
+import { Clock, Users } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 
 interface Props {
@@ -15,10 +15,10 @@ function Index({ tours }: Props) {
     const { t, locale } = useTranslations();
     const [activeCategory, setActiveCategory] = React.useState('all');
 
-    const getTourCategory = (slug: string): 'cultural' | 'adventure' | 'premium' => {
-        const s = slug.toLowerCase();
-        if (s.includes('desert') || s.includes('adventure') || s.includes('arxeolog')) return 'adventure';
-        if (s.includes('premium') || s.includes('math') || s.includes('voha')) return 'premium';
+    const getTourCategory = (tour: Tour): 'cultural' | 'adventure' | 'premium' => {
+        if (tour.category === 'adventure' || tour.category === 'premium' || tour.category === 'cultural') {
+            return tour.category;
+        }
         return 'cultural';
     };
 
@@ -29,7 +29,7 @@ function Index({ tours }: Props) {
 
     const filteredTours = React.useMemo(() => {
         if (activeCategory === 'all') return tours;
-        return tours.filter(tour => getTourCategory(tour.slug) === activeCategory);
+        return tours.filter(tour => getTourCategory(tour) === activeCategory);
     }, [tours, activeCategory]);
 
     return (
@@ -89,8 +89,11 @@ function Index({ tours }: Props) {
                     {filteredTours.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {filteredTours.map((tour, index) => {
-                                const tr = tour.translations.find(trans => trans.locale === locale) || tour.translations[0];
-                                const category = getTourCategory(tour.slug);
+                                const tr = tour.translations.find(trans => trans.locale === locale)
+                                    || tour.translations.find(trans => trans.locale === 'en')
+                                    || tour.translations[0];
+                                const category = getTourCategory(tour);
+                                const maxGroup = tour.max_group_size || (category === 'premium' ? 6 : category === 'adventure' ? 8 : 12);
                                 const carouselImages = tour.images 
                                     ? tour.images.slice(0, 3) 
                                     : (tour.main_image ? [tour.main_image] : []);
@@ -139,18 +142,19 @@ function Index({ tours }: Props) {
                                                     <div className="flex items-center gap-1.5">
                                                         <Clock className="w-4.5 h-4.5 text-gold" />
                                                         <span>
-                                                            {tr.duration} {locale === 'ru' ? 'Дней' : locale === 'uz' ? 'Kun' : 'Days'}
+                                                            {typeof tr.duration === 'string' && /[a-zA-Zа-яА-Я]/.test(tr.duration)
+                                                                ? tr.duration
+                                                                : `${tr.duration} ${locale === 'ru' ? 'Дней' : locale === 'uz' ? 'Kun' : 'Days'}`}
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center gap-1.5">
                                                         <Users className="w-4.5 h-4.5 text-gold" />
                                                         <span>
-                                                            {category === 'premium' 
-                                                                ? (locale === 'ru' ? 'Макс 6 чел' : locale === 'uz' ? 'Maks 6 kishi' : 'Max 6 people')
-                                                                : category === 'adventure'
-                                                                ? (locale === 'ru' ? 'Макс 8 чел' : locale === 'uz' ? 'Maks 8 kishi' : 'Max 8 people')
-                                                                : (locale === 'ru' ? 'Макс 12 чел' : locale === 'uz' ? 'Maks 12 kishi' : 'Max 12 people')
-                                                            }
+                                                            {locale === 'ru'
+                                                                ? `Макс ${maxGroup} чел`
+                                                                : locale === 'uz'
+                                                                ? `Maks ${maxGroup} kishi`
+                                                                : `Max ${maxGroup} people`}
                                                         </span>
                                                     </div>
                                                 </div>

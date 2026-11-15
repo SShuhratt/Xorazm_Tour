@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\AdminCrudHelpers;
 use App\Http\Controllers\Controller;
-use App\Models\Image;
 use App\Models\Transport;
 use App\Models\TransportTranslation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TransportAdminController extends Controller
 {
+    use AdminCrudHelpers;
+
     public function index()
     {
         $transports = Transport::with(['translations', 'mainImage', 'images'])
@@ -36,7 +37,7 @@ class TransportAdminController extends Controller
         $request->validate([
             'slug' => 'nullable|string|unique:transports,slug',
             'status' => 'required|boolean',
-            'capacity' => 'required|integer',
+            'capacity' => 'required|integer|min:1',
             'height' => 'nullable|numeric',
             'width' => 'nullable|numeric',
             'length' => 'nullable|numeric',
@@ -45,39 +46,38 @@ class TransportAdminController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ]);
 
-        $slug = $request->input('slug') ?: Str::slug($request->input('translations.en.name'));
+        $slug = $this->generateUniqueSlug(
+            Transport::class,
+            $request->input('slug'),
+            (string) $request->input('translations.en.name')
+        );
 
-        $transport = Transport::create([
-            'slug' => $slug,
-            'status' => $request->boolean('status', true),
-            'capacity' => $request->input('capacity'),
-            'height' => $request->input('height'),
-            'width' => $request->input('width'),
-            'length' => $request->input('length'),
-        ]);
-
-        foreach (['en', 'ru', 'uz'] as $locale) {
-            $trans = $request->input("translations.{$locale}");
-            if (!empty($trans['name'])) {
-                TransportTranslation::create([
-                    'transport_id' => $transport->id,
-                    'locale' => $locale,
-                    'name' => $trans['name'],
-                    'description' => $trans['description'] ?? '',
-                ]);
-            }
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            Image::create([
-                'imageable_type' => Transport::class,
-                'imageable_id' => $transport->id,
-                'path' => $path,
-                'is_main' => true,
-                'order' => 1,
+        DB::transaction(function () use ($request, $slug) {
+            $transport = Transport::create([
+                'slug' => $slug,
+                'status' => $request->boolean('status', true),
+                'capacity' => $request->input('capacity'),
+                'height' => $request->input('height'),
+                'width' => $request->input('width'),
+                'length' => $request->input('length'),
             ]);
-        }
+
+            foreach (['en', 'ru', 'uz'] as $locale) {
+                $trans = $request->input("translations.{$locale}");
+                if (!empty($trans['name'])) {
+                    TransportTranslation::create([
+                        'transport_id' => $transport->id,
+                        'locale' => $locale,
+                        'name' => $trans['name'],
+                        'description' => $trans['description'] ?? '',
+                    ]);
+                }
+            }
+
+            if ($request->hasFile('image')) {
+                $this->storeUploadedMainImage($request->file('image'), Transport::class, $transport->id);
+            }
+        });
 
         return redirect()->route('admin.transports.index')->with('success', 'Transport created successfully.');
     }
@@ -96,7 +96,7 @@ class TransportAdminController extends Controller
         $request->validate([
             'slug' => 'required|string|unique:transports,slug,' . $transport->id,
             'status' => 'required|boolean',
-            'capacity' => 'required|integer',
+            'capacity' => 'required|integer|min:1',
             'height' => 'nullable|numeric',
             'width' => 'nullable|numeric',
             'length' => 'nullable|numeric',
@@ -105,53 +105,46 @@ class TransportAdminController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ]);
 
-        $transport->update([
-            'slug' => $request->input('slug'),
-            'status' => $request->boolean('status'),
-            'capacity' => $request->input('capacity'),
-            'height' => $request->input('height'),
-            'width' => $request->input('width'),
-            'length' => $request->input('length'),
-        ]);
-
-        foreach (['en', 'ru', 'uz'] as $locale) {
-            $trans = $request->input("translations.{$locale}");
-            if (!empty($trans['name'])) {
-                TransportTranslation::updateOrCreate(
-                    ['transport_id' => $transport->id, 'locale' => $locale],
-                    [
-                        'name' => $trans['name'],
-                        'description' => $trans['description'] ?? '',
-                    ]
-                );
-            }
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            Image::where('imageable_type', Transport::class)->where('imageable_id', $transport->id)->update(['is_main' => false]);
-            Image::create([
-                'imageable_type' => Transport::class,
-                'imageable_id' => $transport->id,
-                'path' => $path,
-                'is_main' => true,
-                'order' => 1,
+        DB::transaction(function () use ($request, $transport) {
+            $transport->update([
+                'slug' => $request->input('slug'),
+                'status' => $request->boolean('status'),
+                'capacity' => $request->input('capacity'),
+                'height' => $request->input('height'),
+                'width' => $request->input('width'),
+                'length' => $request->input('length'),
             ]);
-        }
+
+            foreach (['en', 'ru', 'uz'] as $locale) {
+                $trans = $request->input("translations.{$locale}");
+                if (!empty($trans['name'])) {
+                    TransportTranslation::updateOrCreate(
+                        ['transport_id' => $transport->id, 'locale' => $locale],
+                        [
+                            'name' => $trans['name'],
+                            'description' => $trans['description'] ?? '',
+                        ]
+                    );
+                } elseif ($locale !== 'en') {
+                    TransportTranslation::where('transport_id', $transport->id)->where('locale', $locale)->delete();
+                }
+            }
+
+            if ($request->hasFile('image')) {
+                $this->storeUploadedMainImage($request->file('image'), Transport::class, $transport->id, true);
+            }
+        });
 
         return redirect()->route('admin.transports.edit', $transport->id)->with('success', 'Transport updated successfully.');
     }
 
     public function destroy(Transport $transport)
     {
-        foreach ($transport->images as $image) {
-            if ($image->path && !str_starts_with($image->path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $image->path));
-            }
-            $image->delete();
-        }
-        $transport->translations()->delete();
-        $transport->delete();
+        DB::transaction(function () use ($transport) {
+            $this->deleteImagesFor(Transport::class, $transport->id);
+            $transport->translations()->delete();
+            $transport->delete();
+        });
 
         return redirect()->route('admin.transports.index')->with('success', 'Transport deleted successfully.');
     }

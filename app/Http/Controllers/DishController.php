@@ -24,7 +24,10 @@ class DishController extends Controller
         app()->setLocale($locale);
         $dish = Dish::with(['translations', 'mainImage', 'images'])
             ->where('slug', $slug)
+            ->where('status', true)
             ->first();
+
+        abort_unless((bool) $dish, 404);
 
         return Inertia::render('dishes/show', [
             'slug' => $slug,

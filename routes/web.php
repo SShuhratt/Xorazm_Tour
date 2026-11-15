@@ -6,11 +6,14 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\DishController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('/language/{locale}', [LanguageController::class, 'switch'])
     ->where('locale', 'en|ru|uz');
@@ -51,9 +54,12 @@ Route::group([
     // New static pages
     Route::inertia('/about', 'about')->name('about');
     Route::inertia('/contact', 'contact')->name('contact');
+    Route::inertia('/privacy', 'legal/privacy')->name('privacy');
+    Route::inertia('/terms', 'legal/terms')->name('terms');
 
 });
 
+use App\Http\Controllers\Admin\BookingAdminController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Admin\CityAdminController;
 use App\Http\Controllers\Admin\TourAdminController;
@@ -64,7 +70,7 @@ use App\Http\Controllers\Admin\PostAdminController;
 use App\Http\Controllers\Admin\DishAdminController;
 use App\Http\Controllers\Admin\ImageAdminController;
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
 
     Route::resource('cities', CityAdminController::class)->except(['show']);
@@ -75,12 +81,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('posts', PostAdminController::class)->except(['show']);
     Route::resource('dishes', DishAdminController::class)->except(['show']);
 
+    Route::get('bookings', [BookingAdminController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/export', [BookingAdminController::class, 'export'])->name('bookings.export');
+    Route::patch('bookings/{booking}', [BookingAdminController::class, 'update'])->name('bookings.update');
+
     Route::post('images/upload', [ImageAdminController::class, 'upload'])->name('images.upload');
     Route::delete('images/{image}', [ImageAdminController::class, 'destroy'])->name('images.destroy');
     Route::post('images/{image}/set-main', [ImageAdminController::class, 'setMain'])->name('images.set-main');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::redirect('/dashboard', '/admin/dashboard')->name('dashboard');
 });
 

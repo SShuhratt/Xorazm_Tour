@@ -14,8 +14,8 @@ Successfully completed a comprehensive frontend redesign of the Xorazm Tour hist
 
 #### ✅ About Us Page (`/[locale]/about`)
 - **Hero Section** with luxury gradient background
-- **Mission Statement** showcasing company values
-- **Statistics Dashboard** (500+ tours, 8,500+ guests, 15+ years, 12 cities)
+- **Mission Statement** showcasing company values and verifiable local capabilities
+- **Agency Highlights** (Multilingual EN/RU/UZ guides, 100% custom itineraries, UNESCO Khiva heritage focus, 24/7 local support)
 - **Why Choose Us** - Three value pillars with icons:
   - 🏛️ Local Expertise
   - ✨ Curated Experiences  
@@ -35,7 +35,7 @@ Successfully completed a comprehensive frontend redesign of the Xorazm Tour hist
   - Loading spinner during submission
   - Success message with confirmation
   - API integration: `POST /api/v1/contact/send`
-- **Embedded Google Map** showing Khiva location
+- **Embedded Interactive Map** (OpenStreetMap) showing historic Khiva location
 - **Fully responsive** - mobile-optimized form
 
 ### 2. New Components
@@ -591,4 +591,4 @@ All code is production-ready, fully tested, and optimized for performance. The m
 **Delivered:** February 27, 2026
 **Version:** 2.0.0 (Frontend Refactor)
 **License:** See LICENSE file in repository
-**Contact:** info@xorazmtour.uz
+**Contact:** xorazmtour@gmail.com

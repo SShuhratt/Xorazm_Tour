@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Festival } from '@/types';
 import MainLayout from '@/layouts/main-layout';
 import CardCarousel from '@/components/card-carousel';
-import { Sparkles, MapPin, Calendar, Clock } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface Props {
     festivals: Festival[];

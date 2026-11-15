@@ -32,7 +32,9 @@ export default function MainNavbar() {
         { href: `/${locale}/cities`, label: t('nav.cities') },
         { href: `/${locale}/festivals`, label: t('nav.festivals') },
         { href: `/${locale}/hotels`, label: t('nav.hotels') },
+        { href: `/${locale}/transports`, label: t('nav.transports') },
         { href: `/${locale}/dishes`, label: t('nav.dishes') },
+        { href: `/${locale}/posts`, label: t('nav.posts') },
         { href: `/${locale}/about`, label: t('nav.about') },
         { href: `/${locale}/contact`, label: t('nav.contact') },
     ];
@@ -59,12 +61,12 @@ export default function MainNavbar() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <div className="hidden items-center gap-3 xl:gap-6 lg:flex mx-4">
+                    <div className="hidden items-center gap-3 xl:gap-5 lg:flex mx-3">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="relative text-xs xl:text-sm font-bold uppercase tracking-[0.1em] xl:tracking-[0.15em] text-white/90 transition-colors duration-300 hover:text-gold py-2 group whitespace-nowrap"
+                                className="relative text-[11px] xl:text-xs font-bold uppercase tracking-[0.08em] xl:tracking-[0.12em] text-white/90 transition-colors duration-300 hover:text-gold py-2 group whitespace-nowrap"
                             >
                                 {link.label}
                                 <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gold transition-all duration-300 group-hover:w-full" />
@@ -89,7 +91,7 @@ export default function MainNavbar() {
             </div>
 
             {/* Mobile Menu */}
-            <div className={`overflow-hidden transition-all duration-500 lg:hidden ${isMobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className={`overflow-hidden transition-all duration-500 lg:hidden ${isMobileOpen ? 'max-h-[36rem] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="border-t border-white/10 bg-navy/95 backdrop-blur-md px-4 pb-6 pt-4">
                     {navLinks.map((link) => (
                         <Link

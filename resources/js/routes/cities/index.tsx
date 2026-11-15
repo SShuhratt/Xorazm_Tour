@@ -5,7 +5,6 @@ import { City as CityType } from '@/types';
 import MainLayout from '@/layouts/main-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import CardCarousel from '@/components/card-carousel';
-import { MapPin, ArrowRight } from 'lucide-react';
 
 interface Props {
     cities: CityType[];

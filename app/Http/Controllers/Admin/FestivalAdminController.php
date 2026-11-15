@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\AdminCrudHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Festival;
 use App\Models\FestivalTranslation;
-use App\Models\Image;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class FestivalAdminController extends Controller
 {
+    use AdminCrudHelpers;
+
     public function index()
     {
-        $festivals = Festival::with(['translations', 'mainImage', 'images'])
+        $festivals = Festival::with(['translations', 'mainImage', 'images', 'city.translations'])
             ->orderBy('id', 'desc')
             ->get();
 
@@ -40,44 +41,51 @@ class FestivalAdminController extends Controller
             'status' => 'required|boolean',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'video_url' => 'nullable|string|max:255',
             'translations' => 'required|array',
             'translations.en.title' => 'required|string',
-            'city_id' => 'nullable|integer',
+            'translations.*.event_season' => 'nullable|string|max:255',
+            'translations.*.festival_type' => 'nullable|string|max:255',
+            'translations.*.highlight' => 'nullable|string|max:255',
+            'city_id' => 'nullable|integer|exists:cities,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ]);
 
-        $slug = $request->input('slug') ?: Str::slug($request->input('translations.en.title'));
+        $slug = $this->generateUniqueSlug(
+            Festival::class,
+            $request->input('slug'),
+            (string) $request->input('translations.en.title')
+        );
 
-        $festival = Festival::create([
-            'slug' => $slug,
-            'status' => $request->boolean('status', true),
-            'latitude' => $request->input('latitude'),
-            'longitude' => $request->input('longitude'),
-        ]);
-
-        foreach (['en', 'ru', 'uz'] as $locale) {
-            $trans = $request->input("translations.{$locale}");
-            if (!empty($trans['title'])) {
-                FestivalTranslation::create([
-                    'festival_id' => $festival->id,
-                    'city_id' => $request->input('city_id', 1),
-                    'locale' => $locale,
-                    'title' => $trans['title'],
-                    'description' => $trans['description'] ?? '',
-                ]);
-            }
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            Image::create([
-                'imageable_type' => Festival::class,
-                'imageable_id' => $festival->id,
-                'path' => $path,
-                'is_main' => true,
-                'order' => 1,
+        DB::transaction(function () use ($request, $slug) {
+            $festival = Festival::create([
+                'city_id' => $request->input('city_id'),
+                'slug' => $slug,
+                'status' => $request->boolean('status', true),
+                'latitude' => $request->input('latitude'),
+                'longitude' => $request->input('longitude'),
+                'video_url' => $request->input('video_url'),
             ]);
-        }
+
+            foreach (['en', 'ru', 'uz'] as $locale) {
+                $trans = $request->input("translations.{$locale}");
+                if (!empty($trans['title'])) {
+                    FestivalTranslation::create([
+                        'festival_id' => $festival->id,
+                        'locale' => $locale,
+                        'title' => $trans['title'],
+                        'description' => $trans['description'] ?? '',
+                        'event_season' => $trans['event_season'] ?? null,
+                        'festival_type' => $trans['festival_type'] ?? null,
+                        'highlight' => $trans['highlight'] ?? null,
+                    ]);
+                }
+            }
+
+            if ($request->hasFile('image')) {
+                $this->storeUploadedMainImage($request->file('image'), Festival::class, $festival->id);
+            }
+        });
 
         return redirect()->route('admin.festivals.index')->with('success', 'Festival created successfully.');
     }
@@ -99,58 +107,59 @@ class FestivalAdminController extends Controller
             'status' => 'required|boolean',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'video_url' => 'nullable|string|max:255',
             'translations' => 'required|array',
             'translations.en.title' => 'required|string',
-            'city_id' => 'nullable|integer',
+            'translations.*.event_season' => 'nullable|string|max:255',
+            'translations.*.festival_type' => 'nullable|string|max:255',
+            'translations.*.highlight' => 'nullable|string|max:255',
+            'city_id' => 'nullable|integer|exists:cities,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
         ]);
 
-        $festival->update([
-            'slug' => $request->input('slug'),
-            'status' => $request->boolean('status'),
-            'latitude' => $request->input('latitude'),
-            'longitude' => $request->input('longitude'),
-        ]);
-
-        foreach (['en', 'ru', 'uz'] as $locale) {
-            $trans = $request->input("translations.{$locale}");
-            if (!empty($trans['title'])) {
-                FestivalTranslation::updateOrCreate(
-                    ['festival_id' => $festival->id, 'locale' => $locale],
-                    [
-                        'city_id' => $request->input('city_id', 1),
-                        'title' => $trans['title'],
-                        'description' => $trans['description'] ?? '',
-                    ]
-                );
-            }
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            Image::where('imageable_type', Festival::class)->where('imageable_id', $festival->id)->update(['is_main' => false]);
-            Image::create([
-                'imageable_type' => Festival::class,
-                'imageable_id' => $festival->id,
-                'path' => $path,
-                'is_main' => true,
-                'order' => 1,
+        DB::transaction(function () use ($request, $festival) {
+            $festival->update([
+                'city_id' => $request->input('city_id'),
+                'slug' => $request->input('slug'),
+                'status' => $request->boolean('status'),
+                'latitude' => $request->input('latitude'),
+                'longitude' => $request->input('longitude'),
+                'video_url' => $request->input('video_url'),
             ]);
-        }
+
+            foreach (['en', 'ru', 'uz'] as $locale) {
+                $trans = $request->input("translations.{$locale}");
+                if (!empty($trans['title'])) {
+                    FestivalTranslation::updateOrCreate(
+                        ['festival_id' => $festival->id, 'locale' => $locale],
+                        [
+                            'title' => $trans['title'],
+                            'description' => $trans['description'] ?? '',
+                            'event_season' => $trans['event_season'] ?? null,
+                            'festival_type' => $trans['festival_type'] ?? null,
+                            'highlight' => $trans['highlight'] ?? null,
+                        ]
+                    );
+                } elseif ($locale !== 'en') {
+                    FestivalTranslation::where('festival_id', $festival->id)->where('locale', $locale)->delete();
+                }
+            }
+
+            if ($request->hasFile('image')) {
+                $this->storeUploadedMainImage($request->file('image'), Festival::class, $festival->id, true);
+            }
+        });
 
         return redirect()->route('admin.festivals.edit', $festival->id)->with('success', 'Festival updated successfully.');
     }
 
     public function destroy(Festival $festival)
     {
-        foreach ($festival->images as $image) {
-            if ($image->path && !str_starts_with($image->path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $image->path));
-            }
-            $image->delete();
-        }
-        $festival->translations()->delete();
-        $festival->delete();
+        DB::transaction(function () use ($festival) {
+            $this->deleteImagesFor(Festival::class, $festival->id);
+            $festival->translations()->delete();
+            $festival->delete();
+        });
 
         return redirect()->route('admin.festivals.index')->with('success', 'Festival deleted successfully.');
     }

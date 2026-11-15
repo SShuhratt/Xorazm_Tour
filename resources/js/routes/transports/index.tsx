@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Transport } from '@/types';
 import MainLayout from '@/layouts/main-layout';
 import { useTranslations } from '@/hooks/use-translations';
-import { Users, ArrowRight } from 'lucide-react';
 
 interface Props {
     transports: Transport[];

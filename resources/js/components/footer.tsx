@@ -26,29 +26,57 @@ export default function Footer() {
     const { locale } = usePage<PageProps>().props;
     const { t } = useTranslations();
     const [email, setEmail] = useState('');
+    const [website, setWebsite] = useState('');
     const [isSubscribing, setIsSubscribing] = useState(false);
+    const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const handleSubscribe = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email) return;
 
         setIsSubscribing(true);
+        setNewsletterFeedback(null);
         try {
             const response = await fetch('/api/v1/newsletter/subscribe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Accept: 'application/json',
                     'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, website }),
             });
+
+            const payload = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 setEmail('');
-                alert(t('footer.newsletter_success') || 'Thank you for subscribing!');
+                setNewsletterFeedback({
+                    type: 'success',
+                    text: t('footer.newsletter_success') || 'Thank you for subscribing!',
+                });
+            } else if (response.status === 409) {
+                setNewsletterFeedback({
+                    type: 'error',
+                    text: t('footer.newsletter_exists') || 'This email is already subscribed.',
+                });
+            } else if (response.status === 429) {
+                setNewsletterFeedback({
+                    type: 'error',
+                    text: t('footer.newsletter_rate_limit') || 'Too many requests. Please wait a moment and try again.',
+                });
+            } else {
+                setNewsletterFeedback({
+                    type: 'error',
+                    text: payload.message || payload.error || t('footer.newsletter_error') || 'Subscription failed. Please try again.',
+                });
             }
         } catch (error) {
             console.error('Newsletter subscription error:', error);
+            setNewsletterFeedback({
+                type: 'error',
+                text: t('footer.newsletter_error') || 'Network error. Please try again later.',
+            });
         } finally {
             setIsSubscribing(false);
         }
@@ -59,7 +87,9 @@ export default function Footer() {
         { href: `/${locale}/cities`, label: t('nav.cities') },
         { href: `/${locale}/festivals`, label: t('nav.festivals') },
         { href: `/${locale}/hotels`, label: t('nav.hotels') },
+        { href: `/${locale}/transports`, label: t('nav.transports') },
         { href: `/${locale}/dishes`, label: t('nav.dishes') },
+        { href: `/${locale}/posts`, label: t('nav.posts') },
         { href: `/${locale}/about`, label: t('nav.about') },
         { href: `/${locale}/contact`, label: t('nav.contact') },
     ];
@@ -195,6 +225,16 @@ export default function Footer() {
                         </p>
                         <form onSubmit={handleSubscribe} className="space-y-3">
                             <input
+                                type="text"
+                                name="website"
+                                value={website}
+                                onChange={(e) => setWebsite(e.target.value)}
+                                tabIndex={-1}
+                                autoComplete="off"
+                                aria-hidden="true"
+                                className="hidden"
+                            />
+                            <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -209,6 +249,18 @@ export default function Footer() {
                             >
                                 {isSubscribing ? t('footer.subscribing') : t('footer.subscribe')}
                             </button>
+                            {newsletterFeedback && (
+                                <p
+                                    role="status"
+                                    className={`text-xs rounded-lg px-3 py-2 border ${
+                                        newsletterFeedback.type === 'success'
+                                            ? 'text-emerald-300 bg-emerald-950/50 border-emerald-500/30'
+                                            : 'text-red-300 bg-red-950/50 border-red-500/30'
+                                    }`}
+                                >
+                                    {newsletterFeedback.text}
+                                </p>
+                            )}
                         </form>
                     </div>
                 </div>
@@ -219,18 +271,18 @@ export default function Footer() {
                 {/* Bottom bar */}
                 <div className="flex flex-col md:flex-row items-center justify-between">
                     <p className="text-ivory/50 text-xs text-center md:text-left mb-4 md:mb-0">
-                        &copy; 2024 XORAZM TOUR AND TRAVELS. {t('footer.rights')}
+                        &copy; {new Date().getFullYear()} XORAZM TOUR AND TRAVELS. {t('footer.rights')}
                     </p>
                     <div className="flex gap-6 text-ivory/50 text-xs">
-                        <a href={`/${locale}/privacy`} className="hover:text-gold transition-colors">
-                            Privacy Policy
-                        </a>
-                        <a href={`/${locale}/terms`} className="hover:text-gold transition-colors">
-                            Terms of Service
-                        </a>
+                        <Link href={`/${locale}/privacy`} className="hover:text-gold transition-colors">
+                            {t('footer.privacy_policy') || 'Privacy Policy'}
+                        </Link>
+                        <Link href={`/${locale}/terms`} className="hover:text-gold transition-colors">
+                            {t('footer.terms_of_service') || 'Terms of Service'}
+                        </Link>
                     </div>
                     <div className="flex items-center gap-1 text-ivory/50 text-xs mt-4 md:mt-0">
-                        Made with <Heart className="h-3 w-3 text-gold" /> in Xorazm
+                        {t('footer.made_in') || 'Crafted in Khiva, Xorazm'} <Heart className="h-3 w-3 text-gold" />
                     </div>
                 </div>
             </div>

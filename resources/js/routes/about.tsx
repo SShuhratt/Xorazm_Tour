@@ -11,10 +11,10 @@ export default function About() {
     const { t } = useTranslations();
 
     const stats = [
-        { icon: Award, label: t('about.stats_tours'), value: '500+' },
-        { icon: Users, label: t('about.stats_guests'), value: '8,500+' },
-        { icon: Target, label: t('about.stats_years'), value: '15+' },
-        { icon: Shield, label: t('about.stats_cities'), value: '12' },
+        { icon: Users, label: t('about.highlight_languages_label'), value: t('about.highlight_languages_value') },
+        { icon: Target, label: t('about.highlight_custom_label'), value: t('about.highlight_custom_value') },
+        { icon: Award, label: t('about.highlight_heritage_label'), value: t('about.highlight_heritage_value') },
+        { icon: Shield, label: t('about.highlight_support_label'), value: t('about.highlight_support_value') },
     ];
 
     const whyChoose = [
@@ -126,15 +126,15 @@ export default function About() {
                             <div className="space-y-4">
                                 <div className="flex gap-4 items-start">
                                     <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0" />
-                                    <p className="text-gray-700">Authentic local expertise and heritage knowledge</p>
+                                    <p className="text-gray-700">{t('about.mission_point_1')}</p>
                                 </div>
                                 <div className="flex gap-4 items-start">
                                     <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0" />
-                                    <p className="text-gray-700">Sustainable and responsible tourism practices</p>
+                                    <p className="text-gray-700">{t('about.mission_point_2')}</p>
                                 </div>
                                 <div className="flex gap-4 items-start">
                                     <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0" />
-                                    <p className="text-gray-700">Personalized itineraries for every traveler</p>
+                                    <p className="text-gray-700">{t('about.mission_point_3')}</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -190,7 +190,7 @@ export default function About() {
                             {t('about.why_title')}
                         </h2>
                         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                            Discover what sets Xorazm Tour apart as your premier choice for exploring the Silk Road
+                            {t('about.why_subtitle')}
                         </p>
                     </motion.div>
 

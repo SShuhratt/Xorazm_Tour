@@ -43,6 +43,7 @@ class PostController extends Controller
      */
     public function show(string $locale, Post $post)
     {
+        abort_unless($post->status, 404);
         app()->setLocale($locale);
         $post->load(['translations', 'mainImage', 'images']);
         return Inertia::render('posts/show', ['post' => $post, 'locale' => app()->getLocale()]);

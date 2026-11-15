@@ -21,17 +21,22 @@ class TourController extends Controller
 
     public function show(string $locale, Tour $tour)
     {
+        abort_unless($tour->status === 'active', 404);
         app()->setLocale($locale);
         $tour->load([
             'translations',
             'mainImage',
             'images',
             'cities.translations',
+            'hotels.translations',
+            'hotels.mainImage',
             'transports.translations',
             'schedules' => function($query) {
                 $query->orderBy('day')->orderBy('time');
             },
-            'schedules.translations'
+            'schedules.translations',
+            'schedules.mainImage',
+            'schedules.images',
         ]);
 
         return Inertia::render('tours/show', [

@@ -3,12 +3,11 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MainLayout from '@/layouts/main-layout';
 import { useTranslations } from '@/hooks/use-translations';
-import { PageProps } from '@/types';
+import { Dish, PageProps } from '@/types';
 import { MapPin, ArrowRight, Utensils } from 'lucide-react';
-import { dishesDatabase } from '@/data/dishes';
 
 interface DishesIndexProps {
-    dbDishes?: any[];
+    dbDishes?: Dish[];
 }
 
 export default function DishesIndex({ dbDishes }: DishesIndexProps) {
@@ -33,29 +32,25 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
         { code: 'navoi', label: t('dishes.regions.navoi') },
     ];
 
-    const dishes = dbDishes && dbDishes.length > 0
-        ? dbDishes.map((item) => {
-              const trans = item.translations?.find((tr: any) => tr.locale === locale) || item.translations?.[0] || {};
-              const mainImg = item.main_image?.path || item.images?.[0]?.path || '/images/hero-bg.jpg';
-              return {
-                  slug: item.slug,
-                  image: mainImg,
-                  translations: {
-                      [locale]: {
-                          name: trans.name || 'National Dish',
-                          origin: item.origin_region || 'Uzbekistan',
-                          type: item.category || 'Traditional Dish',
-                          shortDesc: trans.short_description || '',
-                          desc: trans.description || '',
-                      },
-                  },
-              };
-          })
-        : Object.values(dishesDatabase);
+    const dishes = (dbDishes || []).map((item) => {
+        const trans = item.translations?.find((tr) => tr.locale === locale)
+            || item.translations?.find((tr) => tr.locale === 'en')
+            || item.translations?.[0];
+        const mainImg = item.main_image?.path || item.images?.[0]?.path || '/XT_content/khiva/Photos/hero_background.jpg';
+        return {
+            slug: item.slug,
+            originRegion: (item.origin_region || '').toLowerCase(),
+            image: mainImg,
+            name: trans?.name || item.slug,
+            origin: trans?.origin || item.origin_region || 'Uzbekistan',
+            type: trans?.type || item.category || 'Traditional Dish',
+            shortDesc: trans?.short_description || '',
+        };
+    });
 
     const filteredDishes = activeRegion === 'all'
         ? dishes
-        : dishes.filter(dish => dish.slug === activeRegion);
+        : dishes.filter((dish) => dish.originRegion === activeRegion || dish.slug === activeRegion);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -155,7 +150,6 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
                     >
                         <AnimatePresence mode="popLayout">
                             {filteredDishes.map((dish) => {
-                                const details = dish.translations[locale] || dish.translations['uz'];
                                 return (
                                     <motion.article
                                         key={dish.slug}
@@ -170,7 +164,7 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
                                         <div className="relative aspect-[4/3] overflow-hidden bg-navy-light">
                                             <img
                                                 src={dish.image}
-                                                alt={details.name}
+                                                alt={dish.name}
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                             />
                                             {/* Decorative soft overlay */}
@@ -178,22 +172,22 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
                                             {/* Region Badge */}
                                             <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-navy/80 backdrop-blur-sm text-gold border border-gold/20 text-xs font-medium">
                                                 <MapPin className="h-3 w-3" />
-                                                {details.origin.split(',')[0]}
+                                                {dish.origin.split(',')[0]}
                                             </div>
                                         </div>
 
                                         {/* Info Content */}
                                         <div className="flex flex-col flex-grow p-6">
                                             <div className="text-[10px] uppercase tracking-wider text-turquoise font-semibold mb-2">
-                                                {details.type}
+                                                {dish.type}
                                             </div>
 
                                             <h3 className="font-serif text-xl font-bold text-navy mb-3 group-hover:text-gold transition-colors">
-                                                {details.name}
+                                                {dish.name}
                                             </h3>
 
                                             <p className="text-navy/70 text-sm leading-relaxed mb-6 flex-grow">
-                                                {details.shortDesc}
+                                                {dish.shortDesc}
                                             </p>
 
                                             <div className="pt-4 border-t border-gold/10 mt-auto">

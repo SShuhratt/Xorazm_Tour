@@ -69,7 +69,7 @@ class PostSeeder extends Seeder
             foreach ($posts as $postData) {
                 $post = Post::create([
                     'slug'        => Str::slug($postData['title']),
-                    'published'   => true,
+                    'status'      => true,
                     'source_link' => null,
                 ]);
 

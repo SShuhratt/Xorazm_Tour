@@ -1,2 +1,12 @@
 User-agent: *
-Disallow:
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /*.png$
+Allow: /*.ico$
+Allow: /*.svg$
+Allow: /favicon*
+Allow: /images/
+
+Sitemap: https://www.xorazm-tour.uz/sitemap.xml

@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Bus, Plus, Edit, Trash2, Search, CheckCircle, XCircle, Users } from 'lucide-react';
+import { Transport } from '@/types';
 
 interface TransportsIndexProps {
-    transports: any[];
+    transports: Transport[];
 }
 
 export default function TransportsIndex({ transports = [] }: TransportsIndexProps) {
     const [search, setSearch] = useState('');
 
     const filtered = transports.filter((tr) => {
-        const enName = tr.translations?.find((t: any) => t.locale === 'en')?.name || tr.slug || '';
+        const enName = tr.translations?.find((t) => t.locale === 'en')?.name || tr.slug || '';
         return enName.toLowerCase().includes(search.toLowerCase()) || tr.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -61,7 +62,7 @@ export default function TransportsIndex({ transports = [] }: TransportsIndexProp
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((tr) => {
-                                        const enTrans = tr.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = tr.translations?.find((t) => t.locale === 'en');
                                         const image = tr.main_image?.path || tr.images?.[0]?.path;
                                         return (
                                             <tr key={tr.id} className="hover:bg-slate-800/40 transition-colors">

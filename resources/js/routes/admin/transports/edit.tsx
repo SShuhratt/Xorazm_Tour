@@ -2,21 +2,26 @@ import React, { FormEvent, useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import ImageUploadManager from '@/components/admin/image-upload-manager';
-import { ArrowLeft, Save, Globe } from 'lucide-react';
+import TranslationCopyBar from '@/components/admin/translation-copy-bar';
+import { FormErrorsBanner } from '@/components/admin/form-errors-banner';
+import { autoTranslateObject } from '@/utils/auto-translate';
+import { ArrowLeft, Save } from 'lucide-react';
+import { Transport } from '@/types';
 
 interface TransportEditProps {
-    transport?: any;
+    transport?: Transport | null;
 }
 
 export default function TransportEdit({ transport }: TransportEditProps) {
     const isEditing = !!transport;
     const [activeTab, setActiveTab] = useState<'en' | 'ru' | 'uz'>('en');
+    const [isTranslating, setIsTranslating] = useState(false);
 
     const getTrans = (loc: string) => {
-        return transport?.translations?.find((t: any) => t.locale === loc) || { name: '', description: '' };
+        return transport?.translations?.find((t) => t.locale === loc) || { name: '', description: '' };
     };
 
-    const { data, setData, post, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         slug: transport?.slug || '',
         capacity: transport?.capacity || '4',
         status: transport ? Boolean(transport.status) : true,
@@ -34,7 +39,10 @@ export default function TransportEdit({ transport }: TransportEditProps) {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (isEditing) {
-            put(`/admin/transports/${transport.id}`);
+            post(`/admin/transports/${transport.id}`, {
+                preserveScroll: true,
+                headers: { 'X-HTTP-Method-Override': 'PUT' },
+            });
         } else {
             post('/admin/transports');
         }
@@ -50,6 +58,31 @@ export default function TransportEdit({ transport }: TransportEditProps) {
         });
     };
 
+    const handleCopyFrom = (fromLang: 'en' | 'ru' | 'uz') => {
+        const sourceData = data.translations[fromLang];
+        setData('translations', {
+            ...data.translations,
+            [activeTab]: {
+                name: sourceData.name || '',
+                description: sourceData.description || '',
+            },
+        });
+    };
+
+    const handleTranslateFrom = async (fromLang: 'en' | 'ru' | 'uz') => {
+        setIsTranslating(true);
+        try {
+            const sourceData = data.translations[fromLang];
+            const translated = await autoTranslateObject(sourceData, activeTab, fromLang);
+            setData('translations', {
+                ...data.translations,
+                [activeTab]: translated,
+            });
+        } finally {
+            setIsTranslating(false);
+        }
+    };
+
     return (
         <AdminLayout title={isEditing ? `Edit Transport: ${transport.slug}` : 'Create New Transport'}>
             <Head title={isEditing ? 'Edit Transport' : 'Create Transport'} />
@@ -63,6 +96,7 @@ export default function TransportEdit({ transport }: TransportEditProps) {
                 </Link>
 
                 <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
+                    <FormErrorsBanner errors={errors} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-6 border-b border-slate-800">
                         <div>
                             <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Slug URL</label>
@@ -121,25 +155,14 @@ export default function TransportEdit({ transport }: TransportEditProps) {
                     </div>
 
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                            <div className="flex items-center gap-2 text-xs font-semibold text-gold uppercase tracking-wider">
-                                <Globe className="w-4 h-4" /> Transport Multilingual Details
-                            </div>
-                            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                                {(['en', 'ru', 'uz'] as const).map((lang) => (
-                                    <button
-                                        key={lang}
-                                        type="button"
-                                        onClick={() => setActiveTab(lang)}
-                                        className={`px-3 py-1 text-xs font-bold uppercase rounded-lg transition-all ${
-                                            activeTab === lang ? 'bg-gold text-slate-950' : 'text-slate-400 hover:text-white'
-                                        }`}
-                                    >
-                                        {lang}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        <TranslationCopyBar
+                            title="Transport Details"
+                            activeTab={activeTab}
+                            onTabChange={setActiveTab}
+                            onCopyFrom={handleCopyFrom}
+                            onTranslateFrom={handleTranslateFrom}
+                            isTranslating={isTranslating}
+                        />
 
                         <div className="space-y-4">
                             <div>
@@ -186,7 +209,7 @@ export default function TransportEdit({ transport }: TransportEditProps) {
                             <div className="w-full sm:w-auto">
                                 <input
                                     type="file"
-                                    accept="image/*"
+                                    accept="image/*,video/*"
                                     onChange={(e) => setData('image', e.target.files?.[0] || null)}
                                     className="text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-800 file:text-gold"
                                 />

@@ -144,14 +144,8 @@ return [
     */
 
     'features' => [
-        Features::registration(),
-        Features::resetPasswords(),
-        Features::emailVerification(),
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-            // 'window' => 0
-        ]),
+        // Registration, password reset, email verification, and 2FA are disabled
+        // for this single-agency Admin CMS unless their Inertia views are implemented.
     ],
 
 ];

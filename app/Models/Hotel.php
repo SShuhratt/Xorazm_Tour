@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Conserns\HasTranslations;
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,14 +15,29 @@ class Hotel extends Model
     use HasTranslations;
 
     protected $fillable = [
+        'city_id',
         'slug',
         'status',
         'phone_number',
+        'stars',
+        'price_from',
+        'email',
         'longitude',
         'latitude',
         'instagram_link',
         'telegram_link',
     ];
+
+    protected $casts = [
+        'status' => 'boolean',
+        'stars' => 'integer',
+        'price_from' => 'decimal:2',
+    ];
+
+    public function city(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(City::class);
+    }
 
     public function translations(): HasMany
     {

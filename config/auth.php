@@ -124,7 +124,7 @@ return [
     'admin' => [
         'name' => env('ADMIN_NAME', 'Admin'),
         'email' => env('ADMIN_EMAIL', env('ADMIN_USERNAME', 'admin@example.com')),
-        'password' => env('ADMIN_PASSWORD', 'secret'),
+        'password' => env('ADMIN_PASSWORD'),
     ],
 
 ];

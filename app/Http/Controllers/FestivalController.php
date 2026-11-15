@@ -20,6 +20,7 @@ class FestivalController extends Controller
 
     public function show(string $locale, Festival $festival)
     {
+        abort_unless($festival->status, 404);
         app()->setLocale($locale);
         $festival->load(['mainImage', 'translations', 'images']);
         return Inertia::render('festivals/show', [

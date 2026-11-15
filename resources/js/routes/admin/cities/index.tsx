@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { MapPin, Plus, Edit, Trash2, Search, CheckCircle, XCircle } from 'lucide-react';
+import { City } from '@/types';
 
 interface CityProps {
-    cities: any[];
+    cities: City[];
 }
 
 export default function CitiesIndex({ cities = [] }: CityProps) {
     const [search, setSearch] = useState('');
 
     const filtered = cities.filter((city) => {
-        const enName = city.translations?.find((t: any) => t.locale === 'en')?.name || city.slug || '';
+        const enName = city.translations?.find((t) => t.locale === 'en')?.name || city.slug || '';
         return enName.toLowerCase().includes(search.toLowerCase()) || city.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -63,7 +64,7 @@ export default function CitiesIndex({ cities = [] }: CityProps) {
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((city) => {
-                                        const enTrans = city.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = city.translations?.find((t) => t.locale === 'en');
                                         const image = city.main_image?.path || city.images?.[0]?.path;
                                         return (
                                             <tr key={city.id} className="hover:bg-slate-800/40 transition-colors">

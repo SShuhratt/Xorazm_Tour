@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Conserns\HasTranslations;
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,7 +19,17 @@ class Tour extends Model
     protected $fillable = [
         'slug',
         'status',
-        'cost'
+        'category',
+        'cost',
+        'max_group_size',
+        'single_supplement',
+        'pricing_tiers',
+    ];
+
+    protected $casts = [
+        'pricing_tiers' => 'array',
+        'single_supplement' => 'decimal:2',
+        'max_group_size' => 'integer',
     ];
 
     public function translations(): HasMany

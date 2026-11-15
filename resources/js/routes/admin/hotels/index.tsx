@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Building2, Plus, Edit, Trash2, Search, CheckCircle, XCircle, Phone } from 'lucide-react';
+import { Hotel } from '@/types';
 
 interface HotelsIndexProps {
-    hotels: any[];
+    hotels: Hotel[];
 }
 
 export default function HotelsIndex({ hotels = [] }: HotelsIndexProps) {
     const [search, setSearch] = useState('');
 
     const filtered = hotels.filter((hotel) => {
-        const enTitle = hotel.translations?.find((t: any) => t.locale === 'en')?.title || hotel.slug || '';
+        const enTitle = hotel.translations?.find((t) => t.locale === 'en')?.title || hotel.slug || '';
         return enTitle.toLowerCase().includes(search.toLowerCase()) || hotel.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -61,7 +62,7 @@ export default function HotelsIndex({ hotels = [] }: HotelsIndexProps) {
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((hotel) => {
-                                        const enTrans = hotel.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = hotel.translations?.find((t) => t.locale === 'en');
                                         const image = hotel.main_image?.path || hotel.images?.[0]?.path;
                                         return (
                                             <tr key={hotel.id} className="hover:bg-slate-800/40 transition-colors">

@@ -20,6 +20,7 @@ class TransportController extends Controller
     }
 
     public function show(string $locale, Transport $transport){
+        abort_unless($transport->status, 404);
         app()->setLocale($locale);
         $transport->load(['translations', 'mainImage', 'images']);
         return Inertia::render('transports/show', ['transport' => $transport]);

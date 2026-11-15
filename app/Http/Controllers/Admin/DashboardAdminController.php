@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\City;
 use App\Models\Dish;
 use App\Models\Festival;
@@ -25,6 +26,8 @@ class DashboardAdminController extends Controller
             'transports_count' => Transport::count(),
             'posts_count' => Post::count(),
             'dishes_count' => Dish::count(),
+            'bookings_count' => Booking::count(),
+            'new_bookings_count' => Booking::where('status', 'new')->count(),
             'subscribers_count' => DB::table('newsletter_subscriptions')->count(),
         ];
 

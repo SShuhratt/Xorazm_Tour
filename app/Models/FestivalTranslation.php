@@ -15,10 +15,12 @@ class FestivalTranslation extends Model
 
     protected $fillable = [
         'festival_id',
-        'city_id',
         'locale',
         'title',
         'description',
+        'event_season',
+        'festival_type',
+        'highlight',
     ];
 
     public function festival(): BelongsTo

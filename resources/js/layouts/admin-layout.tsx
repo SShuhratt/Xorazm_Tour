@@ -11,6 +11,7 @@ import {
     Bus,
     FileText,
     Utensils,
+    CalendarCheck,
     LogOut,
     ExternalLink,
     CheckCircle2,
@@ -28,6 +29,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
     const navItems = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Bookings', href: '/admin/bookings', icon: CalendarCheck },
         { name: 'Cities', href: '/admin/cities', icon: MapPin },
         { name: 'Tours', href: '/admin/tours', icon: Map },
         { name: 'Hotels', href: '/admin/hotels', icon: Building2 },

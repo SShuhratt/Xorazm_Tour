@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Tour, City, Post, Festival, Hotel } from '@/types';
 import MainLayout from '@/layouts/main-layout';
 import HeroCarousel from '@/components/hero-carousel';
-import { MapPin, Clock, ArrowRight } from 'lucide-react';
+import { Clock, ArrowRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import IntroPreloader from '@/components/intro-preloader';
 
@@ -20,10 +20,10 @@ interface Props {
 function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }: Props) {
     const { t } = useTranslations();
 
-    const getTourCategory = (slug: string): 'cultural' | 'adventure' | 'premium' => {
-        const s = slug.toLowerCase();
-        if (s.includes('desert') || s.includes('adventure') || s.includes('arxeolog')) return 'adventure';
-        if (s.includes('premium') || s.includes('math') || s.includes('voha')) return 'premium';
+    const getTourCategory = (tour: Tour): 'cultural' | 'adventure' | 'premium' => {
+        if (tour.category === 'adventure' || tour.category === 'premium' || tour.category === 'cultural') {
+            return tour.category;
+        }
         return 'cultural';
     };
 
@@ -36,7 +36,7 @@ function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }:
         <div
             className="bg-ivory"
             style={{
-                backgroundImage: 'url(/storage/XT_content/khiva/Photos/hero_background.jpg)',
+                backgroundImage: 'url(/XT_content/khiva/Photos/hero_background.jpg)',
                 backgroundAttachment: 'fixed',
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
@@ -163,10 +163,10 @@ function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }:
                                                         alt={tourT.title}
                                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                     />
-                                                    <span className={`absolute top-4 left-4 z-10 px-3 py-1.5 text-xs font-bold tracking-widest uppercase rounded ${getCategoryBadgeColorClass(getTourCategory(tour.slug))}`}>
-                                                        {getTourCategory(tour.slug) === 'adventure' 
+                                                    <span className={`absolute top-4 left-4 z-10 px-3 py-1.5 text-xs font-bold tracking-widest uppercase rounded ${getCategoryBadgeColorClass(getTourCategory(tour))}`}>
+                                                        {getTourCategory(tour) === 'adventure' 
                                                             ? (locale === 'ru' ? 'Приключение' : locale === 'uz' ? 'Sarguzasht' : 'Adventure')
-                                                            : getTourCategory(tour.slug) === 'premium'
+                                                            : getTourCategory(tour) === 'premium'
                                                             ? (locale === 'ru' ? 'Премиум' : locale === 'uz' ? 'Premium' : 'Premium')
                                                             : (locale === 'ru' ? 'Культура' : locale === 'uz' ? 'Madaniyat' : 'Cultural')
                                                         }
@@ -185,7 +185,11 @@ function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }:
                                                         <div className="flex items-center gap-4 text-sm text-gray-500 font-semibold mb-4">
                                                             <div className="flex items-center gap-1.5">
                                                                 <Clock className="w-4.5 h-4.5 text-gold" />
-                                                                <span>{tourT.duration} {t('home.days')}</span>
+                                                                <span>
+                                                                    {typeof tourT.duration === 'string' && /[a-zA-Zа-яА-Я]/.test(tourT.duration)
+                                                                        ? tourT.duration
+                                                                        : `${tourT.duration} ${t('home.days')}`}
+                                                                </span>
                                                             </div>
                                                         </div>
                                                         <div className="text-turquoise text-base font-semibold mb-4">

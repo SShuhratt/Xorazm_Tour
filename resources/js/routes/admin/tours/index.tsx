@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
-import { Map, Plus, Edit, Trash2, Search, CheckCircle, XCircle, DollarSign } from 'lucide-react';
+import { Map, Plus, Edit, Trash2, Search, CheckCircle, XCircle } from 'lucide-react';
+import { Tour } from '@/types';
 
 interface ToursIndexProps {
-    tours: any[];
+    tours: Tour[];
 }
 
 export default function ToursIndex({ tours = [] }: ToursIndexProps) {
     const [search, setSearch] = useState('');
 
     const filtered = tours.filter((tour) => {
-        const enTitle = tour.translations?.find((t: any) => t.locale === 'en')?.title || tour.slug || '';
+        const enTitle = tour.translations?.find((t) => t.locale === 'en')?.title || tour.slug || '';
         return enTitle.toLowerCase().includes(search.toLowerCase()) || tour.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -54,7 +55,7 @@ export default function ToursIndex({ tours = [] }: ToursIndexProps) {
                                 <tr>
                                     <th className="px-6 py-4">Cover Image</th>
                                     <th className="px-6 py-4">Tour Title (EN)</th>
-                                    <th className="px-6 py-4">Cost ($)</th>
+                                    <th className="px-6 py-4">Pricing</th>
                                     <th className="px-6 py-4">Schedules</th>
                                     <th className="px-6 py-4">Status</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
@@ -63,7 +64,7 @@ export default function ToursIndex({ tours = [] }: ToursIndexProps) {
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((tour) => {
-                                        const enTrans = tour.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = tour.translations?.find((t) => t.locale === 'en');
                                         const image = tour.main_image?.path || tour.images?.[0]?.path;
                                         return (
                                             <tr key={tour.id} className="hover:bg-slate-800/40 transition-colors">
@@ -80,14 +81,13 @@ export default function ToursIndex({ tours = [] }: ToursIndexProps) {
                                                     <div>{enTrans?.title || 'Untitled Tour'}</div>
                                                     <div className="text-[10px] text-slate-400 font-mono mt-0.5">{tour.slug}</div>
                                                 </td>
-                                                <td className="px-6 py-4 font-bold text-gold flex items-center gap-0.5 pt-7">
-                                                    <DollarSign className="w-3.5 h-3.5" />
-                                                    {tour.cost}
+                                                <td className="px-6 py-4 font-bold text-gold">
+                                                    {tour.cost ? `from $${tour.cost}` : 'Tiered'}
                                                 </td>
                                                 <td className="px-6 py-4 text-slate-300 font-medium">
                                                     {(() => {
                                                         const daysCount = tour.schedules && tour.schedules.length > 0
-                                                            ? Math.max(...tour.schedules.map((s: any) => Number(s.day) || 1))
+                                                            ? Math.max(...tour.schedules.map((s) => Number(s.day) || 1))
                                                             : (enTrans?.duration || 0);
                                                         return (
                                                             <div>
@@ -98,7 +98,7 @@ export default function ToursIndex({ tours = [] }: ToursIndexProps) {
                                                     })()}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    {tour.status ? (
+                                                    {tour.status === 'active' ? (
                                                         <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-800/50">
                                                             <CheckCircle className="w-3.5 h-3.5" /> Active
                                                         </span>

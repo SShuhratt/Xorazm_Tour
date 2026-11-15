@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { Image as ImageIcon, Video, Eye, Upload, Trash2, X, ZoomIn } from 'lucide-react';
+import { Image as ImageIcon, Eye, Upload, Trash2, X, ZoomIn } from 'lucide-react';
 
 interface MediaItem {
     id: number;

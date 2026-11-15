@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
 import { Calendar, Plus, Edit, Trash2, Search, CheckCircle, XCircle } from 'lucide-react';
+import { Festival } from '@/types';
 
 interface FestivalsIndexProps {
-    festivals: any[];
+    festivals: Festival[];
 }
 
 export default function FestivalsIndex({ festivals = [] }: FestivalsIndexProps) {
     const [search, setSearch] = useState('');
 
     const filtered = festivals.filter((fest) => {
-        const enTitle = fest.translations?.find((t: any) => t.locale === 'en')?.title || fest.slug || '';
+        const enTitle = fest.translations?.find((t) => t.locale === 'en')?.title || fest.slug || '';
         return enTitle.toLowerCase().includes(search.toLowerCase()) || fest.slug.toLowerCase().includes(search.toLowerCase());
     });
 
@@ -61,7 +62,7 @@ export default function FestivalsIndex({ festivals = [] }: FestivalsIndexProps) 
                             <tbody className="divide-y divide-slate-800">
                                 {filtered.length > 0 ? (
                                     filtered.map((fest) => {
-                                        const enTrans = fest.translations?.find((t: any) => t.locale === 'en');
+                                        const enTrans = fest.translations?.find((t) => t.locale === 'en');
                                         const image = fest.main_image?.path || fest.images?.[0]?.path;
                                         return (
                                             <tr key={fest.id} className="hover:bg-slate-800/40 transition-colors">

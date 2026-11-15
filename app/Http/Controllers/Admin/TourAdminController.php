@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\AdminCrudHelpers;
 use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Hotel;
-use App\Models\Image;
 use App\Models\Tour;
 use App\Models\TourSchedule;
 use App\Models\TourScheduleTranslation;
 use App\Models\TourTranslation;
 use App\Models\Transport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class TourAdminController extends Controller
 {
+    use AdminCrudHelpers;
+
     public function index()
     {
         $tours = Tour::with(['translations', 'mainImage', 'images', 'cities', 'hotels', 'transports', 'schedules.translations', 'schedules.images', 'schedules.mainImage'])
@@ -44,7 +46,11 @@ class TourAdminController extends Controller
         $request->validate([
             'slug' => 'nullable|string|unique:tours,slug',
             'status' => 'required|boolean',
-            'cost' => 'required|numeric',
+            'category' => ['nullable', 'string', Rule::in(['cultural', 'adventure', 'premium'])],
+            'max_group_size' => 'nullable|integer|min:1|max:500',
+            'cost' => 'nullable|numeric',
+            'single_supplement' => 'nullable|numeric',
+            'pricing_tiers' => 'nullable|array',
             'translations' => 'required|array',
             'translations.en.title' => 'required|string',
             'city_ids' => 'nullable|array',
@@ -54,83 +60,34 @@ class TourAdminController extends Controller
             'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,mp4,webm,ogg,mov|max:51200',
         ]);
 
-        $slug = $request->input('slug') ?: Str::slug($request->input('translations.en.title'));
+        $slug = $this->generateUniqueSlug(
+            Tour::class,
+            $request->input('slug'),
+            (string) $request->input('translations.en.title')
+        );
 
-        $tour = Tour::create([
-            'slug' => $slug,
-            'status' => $request->boolean('status', true) ? 'active' : 'inactive',
-            'cost' => $request->input('cost'),
-        ]);
+        $pricingTiers = $this->filterPricingTiers($request->input('pricing_tiers'));
+        $cost = $this->resolveTourCost($request, $pricingTiers);
 
-        foreach (['en', 'ru', 'uz'] as $locale) {
-            $trans = $request->input("translations.{$locale}");
-            if (!empty($trans['title'])) {
-                $duration = !empty($trans['duration']) ? (int) preg_replace('/[^0-9]/', '', (string) $trans['duration']) : 0;
-                TourTranslation::create([
-                    'tour_id' => $tour->id,
-                    'locale' => $locale,
-                    'title' => $trans['title'],
-                    'route' => $trans['route'] ?? '',
-                    'duration' => $duration,
-                    'description' => $trans['description'] ?? '',
-                ]);
-            }
-        }
-
-        if ($request->has('city_ids')) {
-            $tour->cities()->sync($request->input('city_ids'));
-        }
-        if ($request->has('hotel_ids')) {
-            $tour->hotels()->sync($request->input('hotel_ids'));
-        }
-        if ($request->has('transport_ids')) {
-            $tour->transports()->sync($request->input('transport_ids'));
-        }
-
-        if ($request->has('schedules')) {
-            foreach ($request->input('schedules') as $idx => $schedData) {
-                if (!empty($schedData['day'])) {
-                    $schedule = TourSchedule::create([
-                        'tour_id' => $tour->id,
-                        'day' => (int) $schedData['day'],
-                        'time' => $schedData['time'] ?? '09:00',
-                    ]);
-
-                    foreach (['en', 'ru', 'uz'] as $locale) {
-                        if (!empty($schedData['translations'][$locale]['title'])) {
-                            TourScheduleTranslation::create([
-                                'tour_schedule_id' => $schedule->id,
-                                'locale' => $locale,
-                                'title' => $schedData['translations'][$locale]['title'],
-                                'description' => $schedData['translations'][$locale]['description'] ?? '',
-                            ]);
-                        }
-                    }
-
-                    if ($request->hasFile("schedules.{$idx}.image")) {
-                        $path = $request->file("schedules.{$idx}.image")->store('images', 'public');
-                        Image::create([
-                            'imageable_type' => TourSchedule::class,
-                            'imageable_id' => $schedule->id,
-                            'path' => $path,
-                            'is_main' => true,
-                            'order' => 1,
-                        ]);
-                    }
-                }
-            }
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            Image::create([
-                'imageable_type' => Tour::class,
-                'imageable_id' => $tour->id,
-                'path' => $path,
-                'is_main' => true,
-                'order' => 1,
+        DB::transaction(function () use ($request, $slug, $pricingTiers, $cost) {
+            $tour = Tour::create([
+                'slug' => $slug,
+                'status' => $request->boolean('status', true) ? 'active' : 'inactive',
+                'category' => $request->input('category') ?: 'cultural',
+                'max_group_size' => $request->input('max_group_size'),
+                'cost' => $cost,
+                'single_supplement' => $request->input('single_supplement'),
+                'pricing_tiers' => $pricingTiers,
             ]);
-        }
+
+            $this->syncTranslations($request, $tour, false);
+            $this->syncRelations($request, $tour);
+            $this->syncSchedules($request, $tour, false);
+
+            if ($request->hasFile('image')) {
+                $this->storeUploadedMainImage($request->file('image'), Tour::class, $tour->id);
+            }
+        });
 
         return redirect()->route('admin.tours.index')->with('success', 'Tour created successfully.');
     }
@@ -152,7 +109,11 @@ class TourAdminController extends Controller
         $request->validate([
             'slug' => 'required|string|unique:tours,slug,' . $tour->id,
             'status' => 'required|boolean',
-            'cost' => 'required|numeric',
+            'category' => ['nullable', 'string', Rule::in(['cultural', 'adventure', 'premium'])],
+            'max_group_size' => 'nullable|integer|min:1|max:500',
+            'cost' => 'nullable|numeric',
+            'single_supplement' => 'nullable|numeric',
+            'pricing_tiers' => 'nullable|array',
             'translations' => 'required|array',
             'translations.en.title' => 'required|string',
             'city_ids' => 'nullable|array',
@@ -162,103 +123,195 @@ class TourAdminController extends Controller
             'image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,mp4,webm,ogg,mov|max:51200',
         ]);
 
-        $tour->update([
-            'slug' => $request->input('slug'),
-            'status' => $request->boolean('status') ? 'active' : 'inactive',
-            'cost' => $request->input('cost'),
-        ]);
+        $pricingTiers = $this->filterPricingTiers($request->input('pricing_tiers'));
+        $cost = $this->resolveTourCost($request, $pricingTiers) ?? $tour->cost;
 
-        foreach (['en', 'ru', 'uz'] as $locale) {
-            $trans = $request->input("translations.{$locale}");
-            if (!empty($trans['title'])) {
-                $duration = !empty($trans['duration']) ? (int) preg_replace('/[^0-9]/', '', (string) $trans['duration']) : 0;
-                TourTranslation::updateOrCreate(
-                    ['tour_id' => $tour->id, 'locale' => $locale],
-                    [
-                        'title' => $trans['title'],
-                        'route' => $trans['route'] ?? '',
-                        'duration' => $duration,
-                        'description' => $trans['description'] ?? '',
-                    ]
-                );
-            }
-        }
-
-        $tour->cities()->sync($request->input('city_ids', []));
-        $tour->hotels()->sync($request->input('hotel_ids', []));
-        $tour->transports()->sync($request->input('transport_ids', []));
-
-        if ($request->has('schedules')) {
-            $existingSchedIds = [];
-            foreach ($request->input('schedules') as $idx => $schedData) {
-                if (!empty($schedData['day'])) {
-                    $schedule = TourSchedule::updateOrCreate(
-                        ['id' => $schedData['id'] ?? null, 'tour_id' => $tour->id],
-                        ['day' => (int) $schedData['day'], 'time' => $schedData['time'] ?? '09:00']
-                    );
-                    $existingSchedIds[] = $schedule->id;
-
-                    foreach (['en', 'ru', 'uz'] as $locale) {
-                        if (!empty($schedData['translations'][$locale]['title'])) {
-                            TourScheduleTranslation::updateOrCreate(
-                                ['tour_schedule_id' => $schedule->id, 'locale' => $locale],
-                                [
-                                    'title' => $schedData['translations'][$locale]['title'],
-                                    'description' => $schedData['translations'][$locale]['description'] ?? '',
-                                ]
-                            );
-                        }
-                    }
-
-                    if ($request->hasFile("schedules.{$idx}.image")) {
-                        $path = $request->file("schedules.{$idx}.image")->store('images', 'public');
-                        Image::where('imageable_type', TourSchedule::class)
-                            ->where('imageable_id', $schedule->id)
-                            ->update(['is_main' => false]);
-
-                        Image::create([
-                            'imageable_type' => TourSchedule::class,
-                            'imageable_id' => $schedule->id,
-                            'path' => $path,
-                            'is_main' => true,
-                            'order' => 1,
-                        ]);
-                    }
-                }
-            }
-            TourSchedule::where('tour_id', $tour->id)->whereNotIn('id', $existingSchedIds)->delete();
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('images', 'public');
-            Image::where('imageable_type', Tour::class)->where('imageable_id', $tour->id)->update(['is_main' => false]);
-            Image::create([
-                'imageable_type' => Tour::class,
-                'imageable_id' => $tour->id,
-                'path' => $path,
-                'is_main' => true,
-                'order' => 1,
+        DB::transaction(function () use ($request, $tour, $pricingTiers, $cost) {
+            $tour->update([
+                'slug' => $request->input('slug'),
+                'status' => $request->boolean('status') ? 'active' : 'inactive',
+                'category' => $request->input('category') ?: ($tour->category ?: 'cultural'),
+                'max_group_size' => $request->input('max_group_size'),
+                'cost' => $cost,
+                'single_supplement' => $request->input('single_supplement'),
+                'pricing_tiers' => $pricingTiers,
             ]);
-        }
+
+            $this->syncTranslations($request, $tour, true);
+            $this->syncRelations($request, $tour);
+            $this->syncSchedules($request, $tour, true);
+
+            if ($request->hasFile('image')) {
+                $this->storeUploadedMainImage($request->file('image'), Tour::class, $tour->id, true);
+            }
+        });
 
         return redirect()->route('admin.tours.edit', $tour->id)->with('success', 'Tour updated successfully.');
     }
 
     public function destroy(Tour $tour)
     {
-        foreach ($tour->images as $image) {
-            if ($image->path && !str_starts_with($image->path, 'http')) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $image->path));
+        DB::transaction(function () use ($tour) {
+            $this->deleteImagesFor(Tour::class, $tour->id);
+
+            foreach ($tour->schedules as $schedule) {
+                $this->deleteImagesFor(TourSchedule::class, $schedule->id);
+                $schedule->translations()->delete();
+                $schedule->delete();
             }
-            $image->delete();
-        }
-        $tour->translations()->delete();
-        $tour->schedules()->delete();
-        $tour->cities()->detach();
-        $tour->hotels()->detach();
-        $tour->transports()->detach();
-        $tour->delete();
+
+            $tour->translations()->delete();
+            $tour->cities()->detach();
+            $tour->hotels()->detach();
+            $tour->transports()->detach();
+            $tour->delete();
+        });
 
         return redirect()->route('admin.tours.index')->with('success', 'Tour deleted successfully.');
+    }
+
+    private function filterPricingTiers(mixed $tiers): ?array
+    {
+        if (!is_array($tiers)) {
+            return null;
+        }
+
+        return array_values(array_filter($tiers, function ($tier) {
+            return !empty($tier['group_size']) || (isset($tier['price_per_person']) && $tier['price_per_person'] !== '');
+        }));
+    }
+
+    private function resolveTourCost(Request $request, ?array $pricingTiers): mixed
+    {
+        $cost = $request->input('cost');
+        if ($cost !== null && $cost !== '') {
+            return $cost;
+        }
+
+        $allPrices = [];
+        foreach (['en', 'ru', 'uz'] as $loc) {
+            $tiers = $request->input("translations.{$loc}.pricing_tiers", []);
+            if (is_array($tiers)) {
+                foreach ($tiers as $tier) {
+                    if (isset($tier['price_per_person']) && is_numeric($tier['price_per_person'])) {
+                        $allPrices[] = (float) $tier['price_per_person'];
+                    }
+                }
+            }
+        }
+        if ($allPrices === [] && is_array($pricingTiers)) {
+            foreach ($pricingTiers as $tier) {
+                if (isset($tier['price_per_person']) && is_numeric($tier['price_per_person'])) {
+                    $allPrices[] = (float) $tier['price_per_person'];
+                }
+            }
+        }
+
+        return $allPrices !== [] ? min($allPrices) : null;
+    }
+
+    private function syncTranslations(Request $request, Tour $tour, bool $deleteCleared): void
+    {
+        foreach (['en', 'ru', 'uz'] as $locale) {
+            $trans = $request->input("translations.{$locale}");
+            if (!empty($trans['title'])) {
+                $duration = !empty($trans['duration']) ? trim((string) $trans['duration']) : null;
+                $included = !empty($trans['included']) && is_array($trans['included'])
+                    ? array_values(array_filter($trans['included'], fn ($item) => trim((string) $item) !== ''))
+                    : [];
+                $notIncluded = !empty($trans['not_included']) && is_array($trans['not_included'])
+                    ? array_values(array_filter($trans['not_included'], fn ($item) => trim((string) $item) !== ''))
+                    : [];
+                $transPricingTiers = $this->filterPricingTiers($trans['pricing_tiers'] ?? null) ?? [];
+
+                TourTranslation::updateOrCreate(
+                    ['tour_id' => $tour->id, 'locale' => $locale],
+                    [
+                        'title' => $trans['title'],
+                        'route' => $trans['route'] ?? '',
+                        'custom_transport' => $trans['custom_transport'] ?? null,
+                        'duration' => $duration,
+                        'description' => $trans['description'] ?? '',
+                        'included' => $included,
+                        'not_included' => $notIncluded,
+                        'pricing_tiers' => $transPricingTiers,
+                    ]
+                );
+            } elseif ($deleteCleared && $locale !== 'en') {
+                TourTranslation::where('tour_id', $tour->id)->where('locale', $locale)->delete();
+            }
+        }
+    }
+
+    private function syncRelations(Request $request, Tour $tour): void
+    {
+        $cityIds = $request->input('city_ids', []);
+        if (is_array($cityIds)) {
+            $citySync = [];
+            foreach (array_values($cityIds) as $index => $cityId) {
+                $citySync[(int) $cityId] = ['order' => $index + 1];
+            }
+            $tour->cities()->sync($citySync);
+        }
+
+        $tour->hotels()->sync($request->input('hotel_ids', []));
+        $tour->transports()->sync($request->input('transport_ids', []));
+    }
+
+    private function syncSchedules(Request $request, Tour $tour, bool $isUpdate): void
+    {
+        if (!$request->has('schedules')) {
+            return;
+        }
+
+        $existingSchedIds = [];
+        foreach ($request->input('schedules') as $idx => $schedData) {
+            if (empty($schedData['day'])) {
+                continue;
+            }
+
+            $schedule = TourSchedule::updateOrCreate(
+                ['id' => $schedData['id'] ?? null, 'tour_id' => $tour->id],
+                ['day' => (int) $schedData['day'], 'time' => $schedData['time'] ?? '09:00']
+            );
+            $existingSchedIds[] = $schedule->id;
+
+            foreach (['en', 'ru', 'uz'] as $locale) {
+                if (!empty($schedData['translations'][$locale]['title'])) {
+                    TourScheduleTranslation::updateOrCreate(
+                        ['tour_schedule_id' => $schedule->id, 'locale' => $locale],
+                        [
+                            'title' => $schedData['translations'][$locale]['title'],
+                            'description' => $schedData['translations'][$locale]['description'] ?? '',
+                        ]
+                    );
+                } elseif ($isUpdate && $locale !== 'en') {
+                    TourScheduleTranslation::where('tour_schedule_id', $schedule->id)
+                        ->where('locale', $locale)
+                        ->delete();
+                }
+            }
+
+            if ($request->hasFile("schedules.{$idx}.image")) {
+                $this->storeUploadedMainImage(
+                    $request->file("schedules.{$idx}.image"),
+                    TourSchedule::class,
+                    $schedule->id,
+                    $isUpdate
+                );
+            }
+        }
+
+        if ($isUpdate) {
+            $removedSchedules = TourSchedule::where('tour_id', $tour->id)
+                ->whereNotIn('id', $existingSchedIds)
+                ->get();
+
+            foreach ($removedSchedules as $removed) {
+                $this->deleteImagesFor(TourSchedule::class, $removed->id);
+                $removed->translations()->delete();
+                $removed->delete();
+            }
+        }
     }
 }

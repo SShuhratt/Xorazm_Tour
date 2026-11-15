@@ -8,39 +8,9 @@ import CardCarousel from '@/components/card-carousel';
 import { MapPin, ArrowRight } from 'lucide-react';
 
 interface Props {
-    hotels: Hotel[];
+    hotels: (Hotel & { city?: { id: number; slug: string; translations: { locale: string; name: string }[] } | null })[];
     locale: 'en' | 'ru' | 'uz';
 }
-
-const hotelStarsMap: Record<string, number> = {
-    'orient-star-khiva': 3,
-    'asia-khiva': 4,
-    'zarafshan-khiva': 4,
-    'registan-plaza': 4,
-    'emirhan-hotel': 4,
-    'silk-road-empire': 5,
-    'lyabi-house': 3,
-    'komil-hotel': 4,
-    'amulett-hotel': 4,
-    'hyatt-regency': 5,
-    'lotte-hotel': 4,
-    'city-palace': 4
-};
-
-const hotelPriceMap: Record<string, number> = {
-    'orient-star-khiva': 65,
-    'asia-khiva': 55,
-    'zarafshan-khiva': 70,
-    'registan-plaza': 120,
-    'emirhan-hotel': 90,
-    'silk-road-empire': 110,
-    'lyabi-house': 50,
-    'komil-hotel': 60,
-    'amulett-hotel': 75,
-    'hyatt-regency': 180,
-    'lotte-hotel': 130,
-    'city-palace': 115
-};
 
 const heroLabels = {
     en: "Accommodation Complexes",
@@ -69,8 +39,12 @@ function HotelsIndex({ hotels, locale }: Props) {
     const citiesList = React.useMemo(() => {
         const set = new Set<string>();
         hotels.forEach(h => {
+            if (h.city?.slug) {
+                set.add(h.city.slug.charAt(0).toUpperCase() + h.city.slug.slice(1));
+                return;
+            }
             const trans = h.translations.find(transItem => transItem.locale === locale) || h.translations[0];
-            const address = trans.address || '';
+            const address = trans?.address || '';
             if (address.toLowerCase().includes('khiva') || address.toLowerCase().includes('хива') || address.toLowerCase().includes('qiva')) {
                 set.add('Khiva');
             } else if (address.toLowerCase().includes('bukhara') || address.toLowerCase().includes('бухара') || address.toLowerCase().includes('buxoro')) {
@@ -87,22 +61,28 @@ function HotelsIndex({ hotels, locale }: Props) {
     // Live search & city filter matching
     const filteredHotels = React.useMemo(() => {
         return hotels.filter(hotel => {
-            const trans = hotel.translations.find(transItem => transItem.locale === locale) || hotel.translations[0];
-            const titleMatch = trans.title.toLowerCase().includes(searchQuery.toLowerCase());
-            const descMatch = trans.description.toLowerCase().includes(searchQuery.toLowerCase());
-            const addrMatch = (trans.address || '').toLowerCase().includes(searchQuery.toLowerCase());
+            const trans = hotel.translations.find(transItem => transItem.locale === locale)
+                || hotel.translations.find(transItem => transItem.locale === 'en')
+                || hotel.translations[0];
+            const titleMatch = (trans?.title || '').toLowerCase().includes(searchQuery.toLowerCase());
+            const descMatch = (trans?.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+            const addrMatch = (trans?.address || '').toLowerCase().includes(searchQuery.toLowerCase());
             
             let cityMatch = true;
             if (selectedCity !== 'All') {
-                const addrLower = (trans.address || '').toLowerCase();
-                if (selectedCity === 'Khiva') {
-                    cityMatch = addrLower.includes('khiva') || addrLower.includes('хива') || addrLower.includes('qiva');
-                } else if (selectedCity === 'Bukhara') {
-                    cityMatch = addrLower.includes('bukhara') || addrLower.includes('бухара') || addrLower.includes('buxoro');
-                } else if (selectedCity === 'Samarkand') {
-                    cityMatch = addrLower.includes('samarkand') || addrLower.includes('самарканд') || addrLower.includes('samarqand');
-                } else if (selectedCity === 'Tashkent') {
-                    cityMatch = addrLower.includes('tashkent') || addrLower.includes('ташкент') || addrLower.includes('toshkent');
+                if (hotel.city?.slug) {
+                    cityMatch = hotel.city.slug.toLowerCase() === selectedCity.toLowerCase();
+                } else {
+                    const addrLower = (trans?.address || '').toLowerCase();
+                    if (selectedCity === 'Khiva') {
+                        cityMatch = addrLower.includes('khiva') || addrLower.includes('хива') || addrLower.includes('qiva');
+                    } else if (selectedCity === 'Bukhara') {
+                        cityMatch = addrLower.includes('bukhara') || addrLower.includes('бухара') || addrLower.includes('buxoro');
+                    } else if (selectedCity === 'Samarkand') {
+                        cityMatch = addrLower.includes('samarkand') || addrLower.includes('самарканд') || addrLower.includes('samarqand');
+                    } else if (selectedCity === 'Tashkent') {
+                        cityMatch = addrLower.includes('tashkent') || addrLower.includes('ташкент') || addrLower.includes('toshkent');
+                    }
                 }
             }
             
@@ -118,7 +98,7 @@ function HotelsIndex({ hotels, locale }: Props) {
             <section className="page-hero">
                 <div className="page-hero-bg">
                     <img 
-                        src="https://images.unsplash.com/photo-1565008576549-57569a49371d?w=1920&q=80" 
+                        src="/XT_content/khiva/Photos/hero_background.jpg" 
                         alt="Xorazm Stays" 
                     />
                     <div className="page-hero-gradient"></div>
@@ -147,13 +127,15 @@ function HotelsIndex({ hotels, locale }: Props) {
                         {filteredHotels.length > 0 ? (
                             <div className="grid-3">
                                 {filteredHotels.map((hotel, index) => {
-                                    const translation = hotel.translations.find(transItem => transItem.locale === locale) || hotel.translations[0];
+                                    const translation = hotel.translations.find(transItem => transItem.locale === locale)
+                                        || hotel.translations.find(transItem => transItem.locale === 'en')
+                                        || hotel.translations[0];
                                     const carouselImages = hotel.images 
                                         ? hotel.images.slice(0, 3) 
                                         : (hotel.main_image ? [hotel.main_image] : []);
 
-                                    const stars = hotelStarsMap[hotel.slug] || 4;
-                                    const startingPrice = hotelPriceMap[hotel.slug] || 65;
+                                    const stars = Math.max(1, Math.min(5, Number(hotel.stars) || 4));
+                                    const startingPrice = Number(hotel.price_from) || 65;
 
                                     return (
                                         <motion.div

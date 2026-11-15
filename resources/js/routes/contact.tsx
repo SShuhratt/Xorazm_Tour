@@ -32,9 +32,11 @@ export default function Contact() {
         email: '',
         subject: '',
         message: '',
+        website: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -44,28 +46,34 @@ export default function Contact() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setSubmitError(null);
+        setSubmitSuccess(false);
 
         try {
             const response = await fetch('/api/v1/contact/send', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Accept: 'application/json',
                     'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
                 body: JSON.stringify(formData),
             });
 
+            const payload = await response.json().catch(() => ({}));
+
             if (response.ok) {
                 setSubmitSuccess(true);
-                setFormData({ name: '', email: '', subject: '', message: '' });
-                setTimeout(() => setSubmitSuccess(false), 5000);
+                setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+                setTimeout(() => setSubmitSuccess(false), 6000);
+            } else if (response.status === 429) {
+                setSubmitError(t('contact.rate_limit_error'));
             } else {
-                console.error('Error sending message');
-                alert('Failed to send message. Please try again.');
+                setSubmitError(payload.message || payload.error || t('contact.generic_error'));
             }
         } catch (error) {
             console.error('Contact form error:', error);
-            alert('An error occurred. Please try again later.');
+            setSubmitError(t('contact.network_error'));
         } finally {
             setIsSubmitting(false);
         }
@@ -74,25 +82,25 @@ export default function Contact() {
     const contactInfo = [
         {
             icon: MapPin,
-            label: 'Address',
+            label: t('contact.address_label'),
             value: t('contact.address'),
-            href: 'https://maps.google.com/maps?q=Khiva,Uzbekistan',
+            href: 'https://www.openstreetmap.org/?mlat=41.3775&mlon=60.3594#map=15/41.3775/60.3594',
         },
         {
             icon: Phone,
-            label: 'Phone',
+            label: t('contact.phone_label'),
             value: '+998 94 315 75 79',
             href: 'tel:+998943157579',
         },
         {
             icon: Mail,
-            label: 'Email',
+            label: t('contact.email_label'),
             value: 'xorazmtour@gmail.com',
             href: 'mailto:xorazmtour@gmail.com',
         },
         {
             icon: Send,
-            label: 'Telegram',
+            label: t('contact.telegram_label'),
             value: '@xorazmtourandtravels',
             href: 'https://t.me/xorazmtourandtravels',
         },
@@ -145,7 +153,7 @@ export default function Contact() {
                                         {t('contact.info_title')}
                                     </h3>
                                     <p className="text-white/70 text-sm leading-relaxed">
-                                        Have a question about our Silk Road routes, private tours, or bookings? Reach out to our travel specialists.
+                                        {t('contact.info_subtitle')}
                                     </p>
                                 </div>
 
@@ -216,10 +224,10 @@ export default function Contact() {
                         {/* Contact Form (Column 3, 4 & 5) */}
                         <div className="contact-form-panel">
                             <h3 className="font-serif text-3xl font-bold text-navy mb-2">
-                                Send us a Message
+                                {t('contact.form_title')}
                             </h3>
                             <p className="text-gray-500 text-sm mb-8">
-                                Fill out the form below and we will get back to you within 24 hours.
+                                {t('contact.form_subtitle')}
                             </p>
 
                             {submitSuccess && (
@@ -235,13 +243,29 @@ export default function Contact() {
                                             {t('contact.success')}
                                         </p>
                                         <p className="text-green-700 text-sm">
-                                            We'll get back to you as soon as possible.
+                                            {t('contact.success_subtitle')}
                                         </p>
                                     </div>
                                 </motion.div>
                             )}
 
+                            {submitError && (
+                                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm">
+                                    {submitError}
+                                </div>
+                            )}
+
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={formData.website}
+                                    onChange={handleChange}
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                    aria-hidden="true"
+                                    className="hidden"
+                                />
                                 <div className="contact-form-grid">
                                     <div>
                                         <label className="block text-xs uppercase tracking-widest font-bold text-navy/70 mb-2">
@@ -254,7 +278,7 @@ export default function Contact() {
                                             onChange={handleChange}
                                             required
                                             className="contact-input"
-                                            placeholder="Your name"
+                                            placeholder={t('contact.name_placeholder')}
                                         />
                                     </div>
 
@@ -269,7 +293,7 @@ export default function Contact() {
                                             onChange={handleChange}
                                             required
                                             className="contact-input"
-                                            placeholder="your@email.com"
+                                            placeholder={t('contact.email_placeholder')}
                                         />
                                     </div>
                                 </div>
@@ -285,7 +309,7 @@ export default function Contact() {
                                         onChange={handleChange}
                                         required
                                         className="contact-input"
-                                        placeholder="How can we help?"
+                                        placeholder={t('contact.subject_placeholder')}
                                     />
                                 </div>
 
@@ -300,7 +324,7 @@ export default function Contact() {
                                         onChange={handleChange}
                                         required
                                         className="contact-input resize-none"
-                                        placeholder="Tell us about your travel plans..."
+                                        placeholder={t('contact.message_placeholder')}
                                     />
                                 </div>
 
@@ -313,6 +337,32 @@ export default function Contact() {
                                     {isSubmitting ? t('contact.sending') : t('contact.send')}
                                 </button>
                             </form>
+                        </div>
+                    </div>
+
+                    {/* Interactive Khiva Location Map */}
+                    <div className="mt-12 rounded-2xl overflow-hidden border border-gold/30 bg-white shadow-lg">
+                        <div className="px-6 py-4 bg-navy text-ivory flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gold/20">
+                            <div className="flex items-center gap-2">
+                                <MapPin className="w-5 h-5 text-gold" />
+                                <h4 className="font-serif text-lg font-bold">{t('contact.map_title')}</h4>
+                            </div>
+                            <a
+                                href="https://www.openstreetmap.org/?mlat=41.3775&mlon=60.3594#map=15/41.3775/60.3594"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-bold uppercase tracking-wider text-gold hover:underline"
+                            >
+                                {t('contact.map_open')}
+                            </a>
+                        </div>
+                        <div className="h-72 sm:h-80 w-full">
+                            <iframe
+                                title={t('contact.map_title')}
+                                src="https://www.openstreetmap.org/export/embed.html?bbox=60.335%2C41.365%2C60.385%2C41.390&layer=mapnik&marker=41.3775%2C60.3594"
+                                className="w-full h-full border-0"
+                                loading="lazy"
+                            />
                         </div>
                     </div>
                 </div>

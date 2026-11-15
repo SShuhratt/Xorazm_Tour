@@ -16,18 +16,24 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        $adminName = config('auth.admin.name', env('ADMIN_NAME', 'Admin'));
-        $adminEmail = config('auth.admin.email', env('ADMIN_EMAIL', env('ADMIN_USERNAME', 'admin@example.com')));
-        $adminPassword = config('auth.admin.password', env('ADMIN_PASSWORD', 'secret'));
+        $adminName = config('auth.admin.name');
+        $adminEmail = config('auth.admin.email');
+        $adminPassword = config('auth.admin.password');
 
-        User::updateOrCreate(
-            ['email' => $adminEmail],
-            [
-                'name'              => $adminName,
-                'password'          => Hash::make($adminPassword),
-                'email_verified_at' => now(),
-            ]
-        );
+        if (! empty($adminEmail) && ! empty($adminPassword)) {
+            $admin = User::updateOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name'              => $adminName,
+                    'password'          => Hash::make($adminPassword),
+                    'email_verified_at' => now(),
+                ]
+            );
+            $admin->is_admin = true;
+            $admin->save();
+        } else {
+            $this->command?->warn('Skipping admin user creation: ADMIN_EMAIL or ADMIN_PASSWORD is not configured.');
+        }
 
         $this->call(LanguageSeeder::class);
         $this->call(CitySeeder::class);

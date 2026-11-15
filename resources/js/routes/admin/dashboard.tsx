@@ -1,6 +1,7 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
+import { Post, Tour } from '@/types';
 import {
     MapPin,
     Map,
@@ -10,6 +11,7 @@ import {
     FileText,
     Utensils,
     Users,
+    CalendarCheck,
     Plus,
     ArrowRight,
     Compass,
@@ -24,13 +26,15 @@ interface Stats {
     transports_count: number;
     posts_count: number;
     dishes_count?: number;
+    bookings_count?: number;
+    new_bookings_count?: number;
     subscribers_count: number;
 }
 
 interface AdminDashboardProps {
     stats: Stats;
-    latestTours: any[];
-    latestPosts: any[];
+    latestTours: Tour[];
+    latestPosts: Post[];
 }
 
 const defaultStats: Stats = {
@@ -41,6 +45,8 @@ const defaultStats: Stats = {
     transports_count: 0,
     posts_count: 0,
     dishes_count: 0,
+    bookings_count: 0,
+    new_bookings_count: 0,
     subscribers_count: 0,
 };
 
@@ -59,6 +65,7 @@ export default function AdminDashboard({
         { label: 'Transports', count: safeStats.transports_count, href: '/admin/transports', icon: Bus, color: 'text-rose-400', bg: 'bg-rose-500/10' },
         { label: 'Posts', count: safeStats.posts_count, href: '/admin/posts', icon: FileText, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
         { label: 'National Dishes', count: safeStats.dishes_count || 0, href: '/admin/dishes', icon: Utensils, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+        { label: `Bookings (${safeStats.new_bookings_count || 0} new)`, count: safeStats.bookings_count || 0, href: '/admin/bookings', icon: CalendarCheck, color: 'text-lime-400', bg: 'bg-lime-500/10' },
         { label: 'Subscribers', count: safeStats.subscribers_count, href: '#', icon: Users, color: 'text-gold', bg: 'bg-gold/10' },
     ];
 

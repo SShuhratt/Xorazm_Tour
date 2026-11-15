@@ -16,8 +16,18 @@ class TourTranslation extends Model
         'locale',
         'title',
         'route',
+        'custom_transport',
         'duration',
         'description',
+        'included',
+        'not_included',
+        'pricing_tiers',
+    ];
+
+    protected $casts = [
+        'included' => 'array',
+        'not_included' => 'array',
+        'pricing_tiers' => 'array',
     ];
 
     public function transport(): BelongsTo

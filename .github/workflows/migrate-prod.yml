@@ -1,0 +1,61 @@
+name: Production DB Migrations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'database/migrations/**'
+      - '.github/workflows/migrate-prod.yml'
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Production Secret
+        id: check
+        env:
+          PROD_DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+        run: |
+          if [ -z "$PROD_DATABASE_URL" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping production migration: PROD_DATABASE_URL secret is not configured."
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup PHP
+        if: steps.check.outputs.enabled == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: pdo_pgsql, pgsql
+          tools: composer:v2
+
+      - name: Install PHP Dependencies
+        if: steps.check.outputs.enabled == 'true'
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Run Neon Production Migrations & Ensure Admin
+        if: steps.check.outputs.enabled == 'true'
+        env:
+          APP_ENV: production
+          APP_KEY: ${{ secrets.APP_KEY }}
+          DB_CONNECTION: pgsql
+          DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+          ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          cp .env.example .env
+          php artisan migrate --force
+          if [ -n "$ADMIN_EMAIL" ] && [ -n "$ADMIN_PASSWORD" ]; then
+            php artisan admin:ensure
+          fi
+
