@@ -9,6 +9,7 @@ use App\Models\Dish;
 use App\Models\Festival;
 use App\Models\Hotel;
 use App\Models\Post;
+use App\Models\SiteVisit;
 use App\Models\Tour;
 use App\Models\Transport;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,7 @@ class DashboardAdminController extends Controller
 
         return Inertia::render('admin/dashboard', [
             'stats' => $stats,
+            'visitorStats' => SiteVisit::dashboardAnalytics(),
             'latestTours' => $latestTours,
             'latestPosts' => $latestPosts,
         ]);
