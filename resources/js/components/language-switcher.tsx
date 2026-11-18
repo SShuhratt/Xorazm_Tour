@@ -17,13 +17,16 @@ export default function LanguageSwitcher() {
     const currentLang = languages.find(l => l.code === locale) || languages[0];
 
     return (
-        <div className="relative z-[100]">
+        <div className="relative z-[100] shrink-0">
             <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all"
+                aria-expanded={isOpen}
+                aria-label="Select language"
+                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all whitespace-nowrap"
             >
                 <span>{currentLang.flag}</span>
-                <span className="uppercase text-xs font-bold tracking-widest">{currentLang.code}</span>
+                <span className="uppercase text-xs font-bold tracking-wider sm:tracking-widest">{currentLang.code}</span>
             </button>
 
             <AnimatePresence>

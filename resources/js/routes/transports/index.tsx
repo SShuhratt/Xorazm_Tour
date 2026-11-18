@@ -14,7 +14,7 @@ function Index({ transports, locale }: Props) {
     const { t } = useTranslations();
 
     return (
-        <MainLayout>
+        <div className="min-h-screen bg-ivory">
             <Head title="Our Fleet" />
 
             {/* Hero Section */}
@@ -137,7 +137,7 @@ function Index({ transports, locale }: Props) {
                     </motion.div>
                 </div>
             </section>
-        </MainLayout>
+        </div>
     );
 }
 
