@@ -126,11 +126,11 @@ To access the administrative dashboard at `/login` or `/admin/dashboard`:
    npm run build
    ```
 
-### Neon + Vercel + Cloudflare Workflow
+### Production Deployment (Coolify + PostgreSQL + Cloudflare)
 
-- **Database Isolation**: Keep local `.env` on local SQLite (`database/database.sqlite`), `docker-compose.dev.yml` Postgres, or a dedicated Neon **`dev` branch**. Never point local `.env` directly at the Neon production branch (local prod reference env can be kept in untracked `.env.production`).
-- **Automated Production Migrations**: `.github/workflows/migrate-prod.yml` automatically runs `php artisan migrate --force` (and `php artisan admin:ensure`) when migrations change on `main`/`master` once `PROD_DATABASE_URL` (and optionally `APP_KEY`, `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`) are set in GitHub Actions Secrets.
-- **Serverless Media & Queues**: Set `FILESYSTEM_DISK=s3` (Cloudflare R2 `AWS_*` variables) for persistent uploads and `QUEUE_CONNECTION=sync` unless a dedicated `php artisan queue:work` worker runs alongside the app.
+- **Database Isolation**: Keep local `.env` on local SQLite (`database/database.sqlite`) or `docker-compose.dev.yml` Postgres. Never point local `.env` at production databases.
+- **Coolify Stack (`docker-compose.coolify.yml`)**: Deploys `app`, `queue`, `db` (`postgres:15-alpine`), and `nginx` behind Coolify Traefik. `docker/entrypoint.prod.sh` automatically caches Laravel config/routes/views, runs `php artisan migrate --force`, and runs `php artisan admin:ensure` on every startup/deploy.
+- **Media & Queues**: Uses `FILESYSTEM_DISK=s3` (Cloudflare R2 `AWS_*` variables) and `QUEUE_CONNECTION=database` processed by the dedicated `queue` worker container.
 
 ---
 
