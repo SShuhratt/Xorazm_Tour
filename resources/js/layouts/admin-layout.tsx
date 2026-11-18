@@ -9,7 +9,6 @@ import {
     Building2,
     Calendar,
     Bus,
-    FileText,
     Utensils,
     CalendarCheck,
     LogOut,
@@ -35,7 +34,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         { name: 'Hotels', href: '/admin/hotels', icon: Building2 },
         { name: 'Festivals', href: '/admin/festivals', icon: Calendar },
         { name: 'Transports', href: '/admin/transports', icon: Bus },
-        { name: 'Posts', href: '/admin/posts', icon: FileText },
         { name: 'National Dishes', href: '/admin/dishes', icon: Utensils },
     ];
 

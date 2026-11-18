@@ -6,7 +6,6 @@ use App\Models\City;
 use App\Models\Dish;
 use App\Models\Festival;
 use App\Models\Hotel;
-use App\Models\Post;
 use App\Models\Tour;
 use App\Models\Transport;
 use Illuminate\Http\Response;
@@ -27,7 +26,6 @@ class SitemapController extends Controller
             ['path' => '/hotels', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['path' => '/transports', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['path' => '/dishes', 'priority' => '0.7', 'changefreq' => 'monthly'],
-            ['path' => '/posts', 'priority' => '0.7', 'changefreq' => 'weekly'],
             ['path' => '/about', 'priority' => '0.6', 'changefreq' => 'monthly'],
             ['path' => '/contact', 'priority' => '0.6', 'changefreq' => 'monthly'],
             ['path' => '/privacy', 'priority' => '0.3', 'changefreq' => 'yearly'],
@@ -56,7 +54,6 @@ class SitemapController extends Controller
             ['prefix' => '/festivals/', 'items' => Festival::where('status', true)->get(['slug', 'updated_at']), 'priority' => '0.7'],
             ['prefix' => '/hotels/', 'items' => Hotel::where('status', true)->get(['slug', 'updated_at']), 'priority' => '0.7'],
             ['prefix' => '/transports/', 'items' => Transport::where('status', true)->get(['slug', 'updated_at']), 'priority' => '0.6'],
-            ['prefix' => '/posts/', 'items' => Post::where('status', true)->get(['slug', 'updated_at']), 'priority' => '0.6'],
             ['prefix' => '/dishes/', 'items' => Dish::where('status', true)->get(['slug', 'updated_at']), 'priority' => '0.6'],
         ];
 

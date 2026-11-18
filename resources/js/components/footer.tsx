@@ -89,7 +89,6 @@ export default function Footer() {
         { href: `/${locale}/hotels`, label: t('nav.hotels') },
         { href: `/${locale}/transports`, label: t('nav.transports') },
         { href: `/${locale}/dishes`, label: t('nav.dishes') },
-        { href: `/${locale}/posts`, label: t('nav.posts') },
         { href: `/${locale}/about`, label: t('nav.about') },
         { href: `/${locale}/contact`, label: t('nav.contact') },
     ];

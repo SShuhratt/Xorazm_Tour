@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Compass, MapPin, CalendarDays, Building2, Utensils } from 'lucide-react';
 import LanguageSwitcher from './language-switcher';
@@ -10,6 +10,7 @@ export default function MainNavbar() {
     const { locale } = props;
     const { t } = useTranslations();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const prevNavRef = useRef({ locale, url });
 
     useEffect(() => {
         if (!isMobileOpen) return;
@@ -24,15 +25,16 @@ export default function MainNavbar() {
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [isMobileOpen]);
 
-    // Close menu when route or language changes
+    // Close menu only when the route or locale actually changes
     useEffect(() => {
-        if (!isMobileOpen) return;
-
-        const timer = setTimeout(() => {
-            setIsMobileOpen(false);
-        }, 0);
-        return () => clearTimeout(timer);
-    }, [locale, url, isMobileOpen]);
+        if (prevNavRef.current.locale !== locale || prevNavRef.current.url !== url) {
+            prevNavRef.current = { locale, url };
+            const timer = setTimeout(() => {
+                setIsMobileOpen(false);
+            }, 0);
+            return () => clearTimeout(timer);
+        }
+    }, [locale, url]);
 
     const navLinks = [
         { href: `/${locale}/tours`, label: t('nav.tours') },
@@ -41,7 +43,6 @@ export default function MainNavbar() {
         { href: `/${locale}/hotels`, label: t('nav.hotels') },
         { href: `/${locale}/transports`, label: t('nav.transports') },
         { href: `/${locale}/dishes`, label: t('nav.dishes') },
-        { href: `/${locale}/posts`, label: t('nav.posts') },
         { href: `/${locale}/about`, label: t('nav.about') },
         { href: `/${locale}/contact`, label: t('nav.contact') },
     ];
@@ -69,34 +70,34 @@ export default function MainNavbar() {
                 aria-label="Primary navigation"
                 className="fixed top-0 left-0 right-0 z-50 bg-navy/98 backdrop-blur-md shadow-lg border-b border-gold/20 transition-all duration-300"
             >
-                <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-6 xl:px-8">
-                    <div className="flex h-16 lg:h-20 items-center justify-between gap-2 lg:gap-3">
+                <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+                    <div className="flex h-16 lg:h-20 items-center justify-between gap-2">
                         <Link
                             href={`/${locale}`}
-                            className="flex items-center gap-2 sm:gap-2.5 xl:gap-3 shrink-0"
+                            className="flex items-center gap-2 sm:gap-3 shrink-0"
                         >
                             <img
                                 src="/images/logo_transparent.png"
                                 alt="XORAZM TOUR AND TRAVELS Logo"
-                                className="h-11 sm:h-12 lg:h-12 xl:h-14 2xl:h-16 w-auto object-contain py-1 shrink-0"
+                                className="h-11 sm:h-12 lg:h-16 w-auto object-contain py-1 shrink-0"
                             />
                             <div className="flex flex-col font-serif font-bold tracking-wider leading-tight">
-                                <span className="text-white text-sm sm:text-base lg:text-sm xl:text-base 2xl:text-lg whitespace-nowrap">
+                                <span className="text-white text-sm sm:text-base lg:text-lg whitespace-nowrap">
                                     XORAZM TOUR
                                 </span>
-                                <span className="text-gold text-[10px] sm:text-xs lg:text-[10px] xl:text-xs 2xl:text-sm whitespace-nowrap">
+                                <span className="text-gold text-[10px] sm:text-xs lg:text-sm whitespace-nowrap">
                                     AND TRAVELS
                                 </span>
                             </div>
                         </Link>
 
-                        {/* Desktop Nav (untouched look, responsive spacing so Uzbek labels never push LanguageSwitcher off-screen) */}
-                        <div className="hidden lg:flex items-center justify-center gap-2 xl:gap-3.5 2xl:gap-5 min-w-0">
+                        {/* Desktop Nav (previous spacing/typography, bounded so siblings are never overlapped) */}
+                        <div className="hidden lg:flex items-center gap-3 xl:gap-5 mx-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="relative text-[10px] xl:text-[11px] 2xl:text-xs font-bold uppercase tracking-[0.02em] xl:tracking-[0.06em] 2xl:tracking-[0.12em] text-white/90 transition-colors duration-300 hover:text-gold py-2 group whitespace-nowrap shrink-0"
+                                    className="relative text-[11px] xl:text-xs font-bold uppercase tracking-[0.08em] xl:tracking-[0.12em] text-white/90 transition-colors duration-300 hover:text-gold py-2 group whitespace-nowrap shrink-0"
                                 >
                                     {link.label}
                                     <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gold transition-all duration-300 group-hover:w-full" />
@@ -104,13 +105,13 @@ export default function MainNavbar() {
                             ))}
                         </div>
 
-                        {/* Right side: Language switcher (left of 3-line menu on mobile) + mobile hamburger */}
-                        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        {/* Right side: compact LanguageSwitcher + 3-line hamburger on mobile */}
+                        <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-4 shrink-0">
                             <LanguageSwitcher />
                             <button
                                 type="button"
                                 onClick={() => setIsMobileOpen((prev) => !prev)}
-                                className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden rounded-lg hover:bg-white/10 transition-colors"
+                                className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden rounded-lg hover:bg-white/10 transition-colors shrink-0"
                                 aria-label="Toggle menu"
                                 aria-expanded={isMobileOpen}
                                 aria-controls="mobile-navigation-drawer"
@@ -123,14 +124,12 @@ export default function MainNavbar() {
                     </div>
                 </div>
 
-                {/* Mobile 3-line Menu Drawer (All sections + Privacy Policy + Terms of Use) */}
-                <div
-                    id="mobile-navigation-drawer"
-                    className={`overflow-hidden transition-all duration-300 lg:hidden ${
-                        isMobileOpen ? 'max-h-[calc(100dvh-8.5rem)] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
-                    }`}
-                >
-                    <div className="border-t border-white/10 bg-navy/98 backdrop-blur-md px-4 pb-5 pt-3 max-h-[calc(100dvh-8.5rem)] overflow-y-auto divide-y divide-white/5">
+                {/* Mobile 3-line Menu Drawer (All active sections + Privacy Policy + Terms of Use) */}
+                {isMobileOpen && (
+                    <div
+                        id="mobile-navigation-drawer"
+                        className="lg:hidden border-t border-white/10 bg-navy/98 backdrop-blur-md px-4 pb-5 pt-3 max-h-[calc(100dvh-8.5rem)] overflow-y-auto divide-y divide-white/5"
+                    >
                         {drawerLinks.map((link) => {
                             const active = isRouteActive(link.href);
                             return (
@@ -147,10 +146,10 @@ export default function MainNavbar() {
                             );
                         })}
                     </div>
-                </div>
+                )}
             </nav>
 
-            {/* Mobile Bottom Navigation Bar (5 core sections for easy thumb navigation) */}
+            {/* Mobile Bottom Navigation Bar (5 core sections) */}
             <nav
                 aria-label="Mobile bottom navigation"
                 className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-navy/98 backdrop-blur-md border-t border-gold/25 shadow-[0_-4px_20px_rgba(0,0,0,0.25)] pb-[env(safe-area-inset-bottom)]"

@@ -45,8 +45,9 @@ Route::group([
     Route::get('/transports', [TransportController::class, 'index'])->name('transports.index');
     Route::get('/transports/{transport:slug}', [TransportController::class, 'show'])->name('transports.show');
 
-    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-    Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
+    // Temporarily disabled: articles/posts section kept in codebase for future use
+    // Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    // Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
 
     Route::get('/dishes', [DishController::class, 'index'])->name('dishes.index');
     Route::get('/dishes/{slug}', [DishController::class, 'show'])->name('dishes.show');
@@ -78,7 +79,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('hotels', HotelAdminController::class)->except(['show']);
     Route::resource('festivals', FestivalAdminController::class)->except(['show']);
     Route::resource('transports', TransportAdminController::class)->except(['show']);
-    Route::resource('posts', PostAdminController::class)->except(['show']);
+    // Temporarily disabled: articles/posts admin routes kept in codebase for future use
+    // Route::resource('posts', PostAdminController::class)->except(['show']);
     Route::resource('dishes', DishAdminController::class)->except(['show']);
 
     Route::get('bookings', [BookingAdminController::class, 'index'])->name('bookings.index');

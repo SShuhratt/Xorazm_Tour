@@ -9,6 +9,7 @@ use App\Models\Hotel;
 use App\Models\Post;
 use App\Models\Tour;
 use App\Models\Transport;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -33,7 +34,6 @@ class PublicRoutesTest extends TestCase
             '/en/hotels',
             '/en/transports',
             '/en/dishes',
-            '/en/posts',
             '/en/about',
             '/en/contact',
             '/en/privacy',
@@ -73,8 +73,26 @@ class PublicRoutesTest extends TestCase
         $this->get('/en/hotels/inactive-hotel')->assertNotFound();
         $this->get('/en/festivals/inactive-festival')->assertNotFound();
         $this->get('/en/transports/inactive-bus')->assertNotFound();
-        $this->get('/en/posts/inactive-post')->assertNotFound();
         $this->get('/en/dishes/inactive-dish')->assertNotFound();
+    }
+
+    public function test_articles_section_and_admin_post_routes_are_disabled(): void
+    {
+        $post = Post::create(['slug' => 'hidden-story', 'status' => true]);
+        $post->translations()->create(['locale' => 'en', 'title' => 'Hidden Story', 'description' => 'Disabled']);
+
+        $this->get('/en/posts')->assertNotFound();
+        $this->get('/ru/posts')->assertNotFound();
+        $this->get('/uz/posts')->assertNotFound();
+        $this->get('/en/posts/hidden-story')->assertNotFound();
+        $this->get('/posts')->assertNotFound();
+
+        $admin = User::factory()->admin()->create();
+        $this->actingAs($admin)->get('/admin/posts')->assertNotFound();
+        $this->actingAs($admin)->get('/admin/posts/create')->assertNotFound();
+
+        $sitemap = $this->get('/sitemap.xml')->assertOk();
+        $sitemap->assertDontSee('/posts', false);
     }
 
     public function test_active_entity_pages_and_dynamic_sitemap_work(): void

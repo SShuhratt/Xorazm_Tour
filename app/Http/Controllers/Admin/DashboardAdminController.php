@@ -8,7 +8,6 @@ use App\Models\City;
 use App\Models\Dish;
 use App\Models\Festival;
 use App\Models\Hotel;
-use App\Models\Post;
 use App\Models\SiteVisit;
 use App\Models\Tour;
 use App\Models\Transport;
@@ -25,7 +24,6 @@ class DashboardAdminController extends Controller
             'hotels_count' => Hotel::count(),
             'festivals_count' => Festival::count(),
             'transports_count' => Transport::count(),
-            'posts_count' => Post::count(),
             'dishes_count' => Dish::count(),
             'bookings_count' => Booking::count(),
             'new_bookings_count' => Booking::where('status', 'new')->count(),
@@ -37,16 +35,10 @@ class DashboardAdminController extends Controller
             ->take(5)
             ->get();
 
-        $latestPosts = Post::with(['translations', 'mainImage'])
-            ->latest()
-            ->take(5)
-            ->get();
-
         return Inertia::render('admin/dashboard', [
             'stats' => $stats,
             'visitorStats' => SiteVisit::dashboardAnalytics(),
             'latestTours' => $latestTours,
-            'latestPosts' => $latestPosts,
         ]);
     }
 }

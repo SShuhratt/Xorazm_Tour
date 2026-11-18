@@ -23,10 +23,10 @@ export default function LanguageSwitcher() {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
                 aria-label="Select language"
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all whitespace-nowrap"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all whitespace-nowrap"
             >
-                <span>{currentLang.flag}</span>
-                <span className="uppercase text-xs font-bold tracking-wider sm:tracking-widest">{currentLang.code}</span>
+                <span className="text-sm sm:text-base leading-none">{currentLang.flag}</span>
+                <span className="uppercase text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest">{currentLang.code}</span>
             </button>
 
             <AnimatePresence>

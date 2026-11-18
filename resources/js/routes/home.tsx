@@ -1,7 +1,7 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Tour, City, Post, Festival, Hotel } from '@/types';
+import { Tour, City, Festival, Hotel } from '@/types';
 import MainLayout from '@/layouts/main-layout';
 import HeroCarousel from '@/components/hero-carousel';
 import { Clock, ArrowRight } from 'lucide-react';
@@ -11,13 +11,12 @@ import IntroPreloader from '@/components/intro-preloader';
 interface Props {
     featuredTours: Tour[];
     cities: City[];
-    latestPosts: Post[];
     festivals: Festival[];
     hotels: Hotel[];
     locale: 'en' | 'ru' | 'uz';
 }
 
-function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }: Props) {
+function Home({ featuredTours, cities, festivals, hotels, locale }: Props) {
     const { t } = useTranslations();
 
     const getTourCategory = (tour: Tour): 'cultural' | 'adventure' | 'premium' => {
@@ -215,20 +214,19 @@ function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }:
                     </div>
                 </section>
 
-                {/* FESTIVALS & STORIES SECTION */}
+                {/* FESTIVALS SECTION */}
                 <section className="py-20 sm:py-32 bg-ivory">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-                        {/* Festivals */}
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                             viewport={{ once: true }}
                         >
                             <h2 className="font-serif text-3xl sm:text-4xl text-navy font-bold mb-8">
                                 {t('home.upcoming_festivals')}
                             </h2>
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {festivals.map((fest, idx) => {
                                     const festT = fest.translations.find(trans => trans.locale === locale) || fest.translations[0];
                                     return (
@@ -240,7 +238,7 @@ function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }:
                                             viewport={{ once: true }}
                                         >
                                             <Link href={`/${locale}/festivals/${fest.slug}`}>
-                                                <div className="group p-4 bg-white rounded-lg border border-gold/20 hover:border-gold hover:shadow-lg transition-all duration-300 flex gap-4">
+                                                <div className="group p-4 bg-white rounded-lg border border-gold/20 hover:border-gold hover:shadow-lg transition-all duration-300 flex gap-4 h-full">
                                                     <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-navy/10">
                                                         <img
                                                             src={fest.main_image?.path}
@@ -258,50 +256,6 @@ function Home({ featuredTours, cities, latestPosts, festivals, hotels, locale }:
                                                 </div>
                                             </Link>
                                         </motion.div>
-                                    );
-                                })}
-                            </div>
-                        </motion.div>
-
-                        {/* Latest Stories */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8 }}
-                            viewport={{ once: true }}
-                        >
-                            <h2 className="font-serif text-3xl sm:text-4xl text-navy font-bold mb-8">
-                                {t('home.latest_stories')}
-                            </h2>
-                            <div className="space-y-6">
-                                {latestPosts.map((post, idx) => {
-                                    const postT = post.translations.find(trans => trans.locale === locale) || post.translations[0];
-                                    return (
-                                        <motion.article
-                                            key={post.id}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: idx * 0.1 }}
-                                            viewport={{ once: true }}
-                                        >
-                                            <Link href={`/${locale}/posts/${post.slug}`}>
-                                                <div className="group">
-                                                    <div className="story-card-image-wrapper">
-                                                        <img
-                                                            src={post.main_image?.path}
-                                                            alt={postT.title}
-                                                        />
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-navy/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                                                    </div>
-                                                    <h4 className="font-serif text-2xl text-navy group-hover:text-gold transition-colors duration-300 font-bold line-clamp-2">
-                                                        {postT.title}
-                                                    </h4>
-                                                    <p className="text-gray-700 text-base mt-3 line-clamp-2 font-medium">
-                                                        {postT.description || 'Read more about Xorazm'}
-                                                    </p>
-                                                </div>
-                                            </Link>
-                                        </motion.article>
                                     );
                                 })}
                             </div>

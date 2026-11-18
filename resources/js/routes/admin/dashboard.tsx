@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/layouts/admin-layout';
-import { Post, Tour } from '@/types';
+import { Tour } from '@/types';
 import {
     MapPin,
     Map,
     Building2,
     Calendar,
     Bus,
-    FileText,
     Utensils,
     Users,
     CalendarCheck,
@@ -26,7 +25,6 @@ interface Stats {
     hotels_count: number;
     festivals_count: number;
     transports_count: number;
-    posts_count: number;
     dishes_count?: number;
     bookings_count?: number;
     new_bookings_count?: number;
@@ -75,7 +73,6 @@ interface AdminDashboardProps {
     stats: Stats;
     visitorStats?: VisitorStats;
     latestTours: Tour[];
-    latestPosts: Post[];
 }
 
 const emptyPeriodData = (label: string): VisitorPeriodData => ({
@@ -111,7 +108,6 @@ const defaultStats: Stats = {
     hotels_count: 0,
     festivals_count: 0,
     transports_count: 0,
-    posts_count: 0,
     dishes_count: 0,
     bookings_count: 0,
     new_bookings_count: 0,
@@ -122,7 +118,6 @@ export default function AdminDashboard({
     stats = defaultStats,
     visitorStats = defaultVisitorStats,
     latestTours = [],
-    latestPosts = [],
 }: Partial<AdminDashboardProps>) {
     const safeStats = { ...defaultStats, ...stats };
     const safeVisitorStats = visitorStats ?? defaultVisitorStats;
@@ -137,7 +132,6 @@ export default function AdminDashboard({
         { label: 'Hotels', count: safeStats.hotels_count, href: '/admin/hotels', icon: Building2, color: 'text-blue-400', bg: 'bg-blue-500/10' },
         { label: 'Festivals', count: safeStats.festivals_count, href: '/admin/festivals', icon: Calendar, color: 'text-purple-400', bg: 'bg-purple-500/10' },
         { label: 'Transports', count: safeStats.transports_count, href: '/admin/transports', icon: Bus, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-        { label: 'Posts', count: safeStats.posts_count, href: '/admin/posts', icon: FileText, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
         { label: 'National Dishes', count: safeStats.dishes_count || 0, href: '/admin/dishes', icon: Utensils, color: 'text-orange-400', bg: 'bg-orange-500/10' },
         { label: `Bookings (${safeStats.new_bookings_count || 0} new)`, count: safeStats.bookings_count || 0, href: '/admin/bookings', icon: CalendarCheck, color: 'text-lime-400', bg: 'bg-lime-500/10' },
         { label: 'Subscribers', count: safeStats.subscribers_count, href: '#', icon: Users, color: 'text-gold', bg: 'bg-gold/10' },
@@ -159,7 +153,7 @@ export default function AdminDashboard({
                             Welcome to Admin Dashboard
                         </h1>
                         <p className="text-sm text-slate-300 leading-relaxed">
-                            Manage all website contents, upload and replace high-resolution media, create tours, cities, hotels, festivals, transports, and blog posts with multi-language support.
+                            Manage all website contents, upload and replace high-resolution media, and create tours, cities, hotels, festivals, transports, and national dishes with multi-language support.
                         </p>
                     </div>
 
@@ -182,12 +176,6 @@ export default function AdminDashboard({
                             className="px-4 py-2 bg-slate-800 text-slate-200 text-xs font-bold rounded-xl hover:bg-slate-700 transition-all flex items-center gap-2 border border-slate-700"
                         >
                             <Plus className="w-4 h-4" /> Add Hotel
-                        </Link>
-                        <Link
-                            href="/admin/posts/create"
-                            className="px-4 py-2 bg-slate-800 text-slate-200 text-xs font-bold rounded-xl hover:bg-slate-700 transition-all flex items-center gap-2 border border-slate-700"
-                        >
-                            <Plus className="w-4 h-4" /> Add Blog Post
                         </Link>
                     </div>
                 </div>
@@ -390,7 +378,7 @@ export default function AdminDashboard({
                 </div>
 
                 {/* Content Lists */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                     {/* Latest Tours */}
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
@@ -429,48 +417,6 @@ export default function AdminDashboard({
                                 })
                             ) : (
                                 <p className="text-xs text-slate-500 text-center py-4">No tours available</p>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Latest Blog Posts */}
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
-                            <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
-                                <FileText className="w-5 h-5 text-gold" /> Latest Blog Posts
-                            </h3>
-                            <Link href="/admin/posts" className="text-xs font-semibold text-gold hover:underline flex items-center gap-1">
-                                View all <ArrowRight className="w-3.5 h-3.5" />
-                            </Link>
-                        </div>
-                        <div className="space-y-3">
-                            {latestPosts.length > 0 ? (
-                                latestPosts.map((post) => {
-                                    const title = post.translations?.[0]?.title || post.slug;
-                                    const image = post.main_image?.path || post.images?.[0]?.path;
-                                    return (
-                                        <div key={post.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                {image ? (
-                                                    <img src={image} alt={title} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
-                                                ) : (
-                                                    <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500 text-xs">
-                                                        No img
-                                                    </div>
-                                                )}
-                                                <div className="min-w-0">
-                                                    <div className="text-sm font-semibold text-slate-200 truncate">{title}</div>
-                                                    <div className="text-xs text-slate-400">Slug: {post.slug}</div>
-                                                </div>
-                                            </div>
-                                            <Link href={`/admin/posts/${post.id}/edit`} className="text-xs text-slate-400 hover:text-white px-3 py-1.5 bg-slate-800 rounded-lg">
-                                                Edit
-                                            </Link>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p className="text-xs text-slate-500 text-center py-4">No posts available</p>
                             )}
                         </div>
                     </div>

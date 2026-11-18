@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MainLayout from '@/layouts/main-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { Dish, PageProps } from '@/types';
-import { MapPin, ArrowRight, Utensils } from 'lucide-react';
+import { MapPin, ArrowRight, Utensils, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DishesIndexProps {
     dbDishes?: Dish[];
@@ -14,6 +14,15 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
     const { locale } = usePage<PageProps>().props;
     const { t } = useTranslations();
     const [activeRegion, setActiveRegion] = useState<string>('all');
+    const regionScrollRef = useRef<HTMLDivElement>(null);
+
+    const scrollRegions = (direction: 'left' | 'right') => {
+        if (!regionScrollRef.current) return;
+        regionScrollRef.current.scrollBy({
+            left: direction === 'left' ? -180 : 180,
+            behavior: 'smooth',
+        });
+    };
 
     const regions = [
         { code: 'all', label: t('dishes.regions.all') },
@@ -119,25 +128,49 @@ export default function DishesIndex({ dbDishes }: DishesIndexProps) {
             <section className="py-12 bg-ivory">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     
-                    {/* Geographic Filter Bar */}
-                    <div className="mb-12">
-                        <div className="flex flex-wrap gap-2 justify-center pb-4 border-b border-gold/10">
-                            {regions.map((reg) => {
-                                const isActive = activeRegion === reg.code;
-                                return (
-                                    <button
-                                        key={reg.code}
-                                        onClick={() => setActiveRegion(reg.code)}
-                                        className={`px-4 py-2 rounded-full text-xs font-medium tracking-wide transition-all duration-300 ${
-                                            isActive
-                                                ? 'bg-gold text-navy shadow-md scale-105 border border-gold'
-                                                : 'bg-white text-navy/70 border border-gold/10 hover:border-gold/30 hover:bg-gold/5'
-                                        }`}
-                                    >
-                                        {reg.label}
-                                    </button>
-                                );
-                            })}
+                    {/* Geographic Filter Bar (horizontal scroll with arrows on mobile, wrapped on desktop) */}
+                    <div className="mb-12 border-b border-gold/10 pb-4">
+                        <div className="flex items-center gap-1.5 md:block">
+                            <button
+                                type="button"
+                                onClick={() => scrollRegions('left')}
+                                aria-label="Scroll categories left"
+                                className="md:hidden shrink-0 w-8 h-8 rounded-full bg-white border border-gold/25 text-navy hover:border-gold hover:bg-gold/10 flex items-center justify-center shadow-sm transition-colors"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+
+                            <div
+                                ref={regionScrollRef}
+                                className="flex-1 flex items-center flex-nowrap md:flex-wrap md:justify-center gap-2 overflow-x-auto md:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-1"
+                            >
+                                {regions.map((reg) => {
+                                    const isActive = activeRegion === reg.code;
+                                    return (
+                                        <button
+                                            key={reg.code}
+                                            type="button"
+                                            onClick={() => setActiveRegion(reg.code)}
+                                            className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-full text-xs font-medium tracking-wide transition-all duration-300 ${
+                                                isActive
+                                                    ? 'bg-gold text-navy shadow-md md:scale-105 border border-gold'
+                                                    : 'bg-white text-navy/70 border border-gold/10 hover:border-gold/30 hover:bg-gold/5'
+                                            }`}
+                                        >
+                                            {reg.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => scrollRegions('right')}
+                                aria-label="Scroll categories right"
+                                className="md:hidden shrink-0 w-8 h-8 rounded-full bg-white border border-gold/25 text-navy hover:border-gold hover:bg-gold/10 flex items-center justify-center shadow-sm transition-colors"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
                         </div>
                     </div>
 

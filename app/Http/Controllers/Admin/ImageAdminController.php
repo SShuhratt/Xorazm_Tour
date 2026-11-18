@@ -8,7 +8,6 @@ use App\Models\Dish;
 use App\Models\Festival;
 use App\Models\Hotel;
 use App\Models\Image;
-use App\Models\Post;
 use App\Models\Tour;
 use App\Models\TourSchedule;
 use App\Models\Transport;
@@ -30,7 +29,7 @@ class ImageAdminController extends Controller
         Hotel::class,
         Festival::class,
         Transport::class,
-        Post::class,
+        // Post::class, // Temporarily disabled with articles section
         Dish::class,
     ];
 
