@@ -45,12 +45,15 @@ RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoload
 # Copy application source and compiled Vite assets
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+COPY docker/entrypoint.prod.sh /usr/local/bin/entrypoint.prod.sh
 
 RUN rm -f public/storage \
     && php artisan storage:link \
+    && chmod +x /usr/local/bin/entrypoint.prod.sh \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R ug+rwx /var/www/storage /var/www/bootstrap/cache
 
 USER www-data
 EXPOSE 9000
+ENTRYPOINT ["/usr/local/bin/entrypoint.prod.sh"]
 CMD ["php-fpm", "-F"]
